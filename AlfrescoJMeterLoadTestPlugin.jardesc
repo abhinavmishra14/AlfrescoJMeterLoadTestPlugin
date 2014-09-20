@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jardesc>
+	<jar path="./AlfrescoJMeterLoadTestPlugin/jar/AlfrescoJMeterLoadTestPlugin.jar"/>
+	<options overwrite="false" compress="true" exportErrors="true" exportWarnings="true" saveDescription="true" descriptionLocation="/AlfrescoJMeterLoadTestPlugin/AlfrescoJMeterLoadTestPlugin.jardesc" useSourceFolders="false" buildIfNeeded="true" includeDirectoryEntries="false" storeRefactorings="false"/>
+	<manifest manifestVersion="1.0" usesManifest="true" reuseManifest="false" saveManifest="false" generateManifest="true" manifestLocation="">
+	<sealing sealJar="false">
+	<packagesToSeal name="src/*"/>
+	<packagesToUnSeal/>
+	</sealing>
+	</manifest>
+	<selectedElements exportClassFiles="true" exportOutputFolder="false" exportJavaFiles="false">
+	  <folder path="/AlfrescoJMeterLoadTestPlugin/src"/>
+	</selectedElements>
+</jardesc>

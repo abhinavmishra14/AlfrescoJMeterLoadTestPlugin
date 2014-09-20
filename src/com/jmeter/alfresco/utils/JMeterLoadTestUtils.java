@@ -1,0 +1,193 @@
+/*
+ * Created By: Abhinav Kumar Mishra
+ * Copyright &copy; 2013-2014. Abhinav Kumar Mishra. 
+ * All rights reserved.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jmeter.alfresco.utils;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.http.ParseException;
+
+/**
+ * The Class JMeterLoadTestUtils.
+ */
+public final class JMeterLoadTestUtils {
+
+	/**
+	 * Gets the login response.
+	 *
+	 * @param authURI the path
+	 * @param username the username
+	 * @param password the password
+	 * @return the login response
+	 * @throws ParseException the parse exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static Map<String, String> getAuthResponse(final String authURI,
+			final String username, final String password)
+			throws ParseException, IOException {
+		
+		System.out.println("[JMeterLoadTestUtils:] Authenticating request..");
+		final Map<String, String> responseMap = new HashMap<String, String>();
+		GetMethod getRequest = null;
+		try {
+			final HttpClient httpclient = new HttpClient();
+			getRequest = new GetMethod(getAuthURL(authURI, username, password));
+			int statusCode = httpclient.executeMethod(getRequest);
+			System.out.println("[JMeterLoadTestUtils:] Auth Response Status: "+ statusCode
+					+"|"+ getRequest.getStatusText());
+	
+			responseMap.put(JMeterConstants.RESP_BODY, getRequest.getResponseBodyAsString());
+			responseMap.put(JMeterConstants.CONTENT_TYPE, getRequest.getResponseHeader(JMeterConstants.CONTENT_TYPE_HDR).getValue());
+			responseMap.put(JMeterConstants.STATUS_CODE, String.valueOf(statusCode));
+			
+		} finally {
+			getRequest.releaseConnection();
+		}
+		return responseMap;
+	}
+		
+	/**
+	 * Gets the auth ticket.
+	 *
+	 * @param authURI the auth uri
+	 * @param username the username
+	 * @param password the password
+	 * @return the auth ticket
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static String getAuthTicket(final String authURI,
+			final String username, final String password) throws IOException {
+		final Map<String, String> responseMap = getAuthResponse(authURI, username, password);
+		final String ticketFrmResponse = responseMap.get(JMeterConstants.RESP_BODY);
+		int startindex = ticketFrmResponse.indexOf("TICKET");
+		int endindex = ticketFrmResponse.indexOf("</");
+		return ticketFrmResponse.substring(startindex, endindex);
+	}
+	
+	/**
+	 * Process upload.
+	 *
+	 * @param docFileObj the doc file obj
+	 * @param authTicket the auth ticket
+	 * @param uploadURI the upload uri
+	 * @param siteID the site id
+	 * @param uploadDir the upload dir
+	 * @return the map
+	 */
+	public static String processUpload(final File docFileObj,final String authTicket,
+			final String uploadURI, final String siteID,final String uploadDir) {
+
+		String uploadResponse = JMeterConstants.EMPTY;
+		try {
+			final String uploadURL = getFileUploadURL(uploadURI,authTicket);
+			
+			System.out.println("[JMeterLoadTestUtils:] processUpload() | Upload URL: " + uploadURL);
+			
+			final HttpClient httpClient = new HttpClient();
+			final PostMethod postRequest = new PostMethod(uploadURL);
+		    final String mimeType = getMimeType(docFileObj);
+			final String docName = docFileObj.getName();
+			System.out.println("[JMeterLoadTestUtils:] processUpload() | Uploading document: "+docName+" , content-type: "+mimeType);
+
+			final Part[] parts = {
+					new FilePart("filedata", docName, docFileObj, mimeType,null),
+					new StringPart("filename", docName),
+					new StringPart("overwrite", "true"),
+					new StringPart("siteid",siteID),
+					new StringPart("containerid",ConfigReader.getProperty(JMeterConstants.CONTAINER_ID)),
+					new StringPart("uploaddirectory",uploadDir) 
+			      };
+			
+			postRequest.setRequestEntity(new MultipartRequestEntity(parts, postRequest.getParams()));
+			
+			final int statusCode = httpClient.executeMethod(postRequest);	
+			
+			uploadResponse = postRequest.getResponseBodyAsString();
+			System.out.println("[JMeterLoadTestUtils:] processUpload() | Upload status: "+statusCode+"  \nUpload response: "+uploadResponse);
+			//releaseConnection http connection
+			postRequest.releaseConnection();
+
+		} catch (Exception excp) {
+			excp.printStackTrace();
+		}
+		return uploadResponse;
+	}
+
+	/**
+	 * Gets the auth url.
+	 *
+	 * @param path the path
+	 * @param username the username
+	 * @param password the password
+	 * @return the url
+	 */
+	private static String getAuthURL(final String path, final String username,
+			final String password) {
+		final StringBuffer urlStrb = new StringBuffer(path);
+		urlStrb.append(JMeterConstants.QUES);
+		urlStrb.append(JMeterConstants.U);
+		urlStrb.append(JMeterConstants.EQL);
+		urlStrb.append(username);
+		urlStrb.append(JMeterConstants.AMPERSND);
+		urlStrb.append(JMeterConstants.PW);
+		urlStrb.append(JMeterConstants.EQL);
+		urlStrb.append(password);
+		return urlStrb.toString();
+	}
+	
+	
+	/**
+	 * Url file upload.
+	 *
+	 * @param path the path
+	 * @param ticket the ticket
+	 * @return the string
+	 */
+	private static String getFileUploadURL(final String path, final String ticket) {
+		final StringBuffer urlStrb = new StringBuffer(path);
+		urlStrb.append(JMeterConstants.QUES);
+		urlStrb.append(JMeterConstants.TICKET_QRY);
+		urlStrb.append(JMeterConstants.EQL);
+		urlStrb.append(ticket);
+		return urlStrb.toString();
+	}
+	
+	/**
+	 * Gets the mime type.
+	 *
+	 * @param fileObj the file obj
+	 * @return the mime type
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static String getMimeType(final File fileObj) throws IOException {
+		final Path source = Paths.get(fileObj.getPath());
+		return Files.probeContentType(source);
+	}
+}
