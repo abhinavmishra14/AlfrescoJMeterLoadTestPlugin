@@ -34,7 +34,7 @@ import org.apache.jmeter.samplers.SampleResult;
 
 import com.jmeter.alfresco.utils.ConfigReader;
 import com.jmeter.alfresco.utils.DirectoryTraverser;
-import com.jmeter.alfresco.utils.JMeterConstants;
+import com.jmeter.alfresco.utils.JMeterLoadTestConstants;
 import com.jmeter.alfresco.utils.JMeterLoadTestUtils;
 
 /**
@@ -48,15 +48,15 @@ public class UploadDocumentTest extends AbstractJavaSamplerClient {
 	@Override
 	public Arguments getDefaultParameters() {
 		final Arguments defaultParameters = new Arguments();
-		defaultParameters.addArgument(JMeterConstants.SERVER,
-			    ConfigReader.getProperty(JMeterConstants.BASEPATH));
-		defaultParameters.addArgument(JMeterConstants.USERNAME,ConfigReader.getProperty(JMeterConstants.U));
-		defaultParameters.addArgument(JMeterConstants.PASSWORD,ConfigReader.getProperty(JMeterConstants.PW));
+		defaultParameters.addArgument(JMeterLoadTestConstants.SERVER,
+			    ConfigReader.getProperty(JMeterLoadTestConstants.BASEPATH));
+		defaultParameters.addArgument(JMeterLoadTestConstants.USERNAME,ConfigReader.getProperty(JMeterLoadTestConstants.U));
+		defaultParameters.addArgument(JMeterLoadTestConstants.PASSWORD,ConfigReader.getProperty(JMeterLoadTestConstants.PW));
 		
-		defaultParameters.addArgument(JMeterConstants.SITE_ID,ConfigReader.getProperty(JMeterConstants.SITE_ID));
-		defaultParameters.addArgument(JMeterConstants.UPLOAD_DIR,ConfigReader.getProperty(JMeterConstants.UPLOAD_DIR));
+		defaultParameters.addArgument(JMeterLoadTestConstants.SITE_ID,ConfigReader.getProperty(JMeterLoadTestConstants.SITE_ID));
+		defaultParameters.addArgument(JMeterLoadTestConstants.UPLOAD_DIR,ConfigReader.getProperty(JMeterLoadTestConstants.UPLOAD_DIR));
 
-		defaultParameters.addArgument(JMeterConstants.INPUT_PATH,JMeterConstants.EMPTY);
+		defaultParameters.addArgument(JMeterLoadTestConstants.INPUT_PATH,JMeterLoadTestConstants.EMPTY);
 		return defaultParameters;
 	}
 	
@@ -78,17 +78,17 @@ public class UploadDocumentTest extends AbstractJavaSamplerClient {
 		
 		System.out.println("[UploadDocumentTest:] runTest() invoked..");
 
-		final String serverAddress= context.getParameter(JMeterConstants.SERVER);
+		final String serverAddress= context.getParameter(JMeterLoadTestConstants.SERVER);
 		
-		final String uploadURI = serverAddress+ConfigReader.getProperty(JMeterConstants.UPLOAD_PATH);
-		final String authURI = serverAddress+ConfigReader.getProperty(JMeterConstants.LOGIN_PATH);
-		final String username = context.getParameter(JMeterConstants.USERNAME);
-		final String password = context.getParameter(JMeterConstants.PASSWORD);
-		final String inputUri = context.getParameter(JMeterConstants.INPUT_PATH);		
-		final String siteID = context.getParameter(JMeterConstants.SITE_ID);
-		final String uploadDir = context.getParameter(JMeterConstants.UPLOAD_DIR);
+		final String uploadURI = serverAddress+ConfigReader.getProperty(JMeterLoadTestConstants.UPLOAD_PATH);
+		final String authURI = serverAddress+ConfigReader.getProperty(JMeterLoadTestConstants.LOGIN_PATH);
+		final String username = context.getParameter(JMeterLoadTestConstants.USERNAME);
+		final String password = context.getParameter(JMeterLoadTestConstants.PASSWORD);
+		final String inputUri = context.getParameter(JMeterLoadTestConstants.INPUT_PATH);		
+		final String siteID = context.getParameter(JMeterLoadTestConstants.SITE_ID);
+		final String uploadDir = context.getParameter(JMeterLoadTestConstants.UPLOAD_DIR);
 
-		String authTicket = JMeterConstants.EMPTY;
+		String authTicket = JMeterLoadTestConstants.EMPTY;
 		try {
 			authTicket = JMeterLoadTestUtils.getAuthTicket(authURI, username, password);
 		} catch (IOException e) {
@@ -112,7 +112,7 @@ public class UploadDocumentTest extends AbstractJavaSamplerClient {
 					responseBody.append(JMeterLoadTestUtils.processUpload(
 							fileObj, authTicket, uploadURI, siteID,
 							uploadDir));
-					responseBody.append(JMeterConstants.BR);
+					responseBody.append(JMeterLoadTestConstants.BR);
 			     }
 			}else{
 				responseBody.append(JMeterLoadTestUtils.processUpload(
@@ -126,7 +126,7 @@ public class UploadDocumentTest extends AbstractJavaSamplerClient {
 			result.setResponseMessage(responseBody.toString());
 			result.setSuccessful(true);
 			result.setResponseCodeOK();
-			result.setContentType(JMeterConstants.MIME_TYPE);
+			result.setContentType(JMeterLoadTestConstants.MIME_TYPE);
 			
 		} catch (Exception excp) {
 			result.sampleEnd(); // stop stop-watch
@@ -135,9 +135,9 @@ public class UploadDocumentTest extends AbstractJavaSamplerClient {
 			// get stack trace as a String to return as document data
 			final StringWriter stringWriter = new StringWriter();
 			excp.printStackTrace(new PrintWriter(stringWriter));
-			result.setResponseData(stringWriter.toString(),JMeterConstants.ENCODING);
+			result.setResponseData(stringWriter.toString(),JMeterLoadTestConstants.ENCODING);
 			result.setDataType(org.apache.jmeter.samplers.SampleResult.TEXT);
-			result.setResponseCode(JMeterConstants.SERVER_ERR);
+			result.setResponseCode(JMeterLoadTestConstants.SERVER_ERR);
 		} 
 		return result;
 	}

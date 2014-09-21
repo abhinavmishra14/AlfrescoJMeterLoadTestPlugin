@@ -63,9 +63,9 @@ public final class JMeterLoadTestUtils {
 			System.out.println("[JMeterLoadTestUtils:] Auth Response Status: "+ statusCode
 					+"|"+ getRequest.getStatusText());
 	
-			responseMap.put(JMeterConstants.RESP_BODY, getRequest.getResponseBodyAsString());
-			responseMap.put(JMeterConstants.CONTENT_TYPE, getRequest.getResponseHeader(JMeterConstants.CONTENT_TYPE_HDR).getValue());
-			responseMap.put(JMeterConstants.STATUS_CODE, String.valueOf(statusCode));
+			responseMap.put(JMeterLoadTestConstants.RESP_BODY, getRequest.getResponseBodyAsString());
+			responseMap.put(JMeterLoadTestConstants.CONTENT_TYPE, getRequest.getResponseHeader(JMeterLoadTestConstants.CONTENT_TYPE_HDR).getValue());
+			responseMap.put(JMeterLoadTestConstants.STATUS_CODE, String.valueOf(statusCode));
 			
 		} finally {
 			if(getRequest!=null){
@@ -87,7 +87,7 @@ public final class JMeterLoadTestUtils {
 	public static String getAuthTicket(final String authURI,
 			final String username, final String password) throws IOException {
 		final Map<String, String> responseMap = getAuthResponse(authURI, username, password);
-		final String ticketFrmResponse = responseMap.get(JMeterConstants.RESP_BODY);
+		final String ticketFrmResponse = responseMap.get(JMeterLoadTestConstants.RESP_BODY);
 		int startindex = ticketFrmResponse.indexOf("TICKET");
 		int endindex = ticketFrmResponse.indexOf("</");
 		return ticketFrmResponse.substring(startindex, endindex);
@@ -108,7 +108,7 @@ public final class JMeterLoadTestUtils {
 			final String authTicket, final String uploadURI,
 			final String siteID, final String uploadDir) throws IOException {
 
-		String uploadResponse = JMeterConstants.EMPTY;
+		String uploadResponse = JMeterLoadTestConstants.EMPTY;
 		PostMethod postRequest = null;
 		try {
 			final String uploadURL = getFileUploadURL(uploadURI,authTicket);
@@ -126,7 +126,7 @@ public final class JMeterLoadTestUtils {
 					new StringPart("filename", docName),
 					new StringPart("overwrite", "true"),
 					new StringPart("siteid",siteID),
-					new StringPart("containerid",ConfigReader.getProperty(JMeterConstants.CONTAINER_ID)),
+					new StringPart("containerid",ConfigReader.getProperty(JMeterLoadTestConstants.CONTAINER_ID)),
 					new StringPart("uploaddirectory",uploadDir) 
 			      };
 			
@@ -157,13 +157,13 @@ public final class JMeterLoadTestUtils {
 	private static String getAuthURL(final String path, final String username,
 			final String password) {
 		final StringBuffer urlStrb = new StringBuffer(path);
-		urlStrb.append(JMeterConstants.QUES);
-		urlStrb.append(JMeterConstants.U);
-		urlStrb.append(JMeterConstants.EQL);
+		urlStrb.append(JMeterLoadTestConstants.QUES);
+		urlStrb.append(JMeterLoadTestConstants.U);
+		urlStrb.append(JMeterLoadTestConstants.EQL);
 		urlStrb.append(username);
-		urlStrb.append(JMeterConstants.AMPERSND);
-		urlStrb.append(JMeterConstants.PW);
-		urlStrb.append(JMeterConstants.EQL);
+		urlStrb.append(JMeterLoadTestConstants.AMPERSND);
+		urlStrb.append(JMeterLoadTestConstants.PW);
+		urlStrb.append(JMeterLoadTestConstants.EQL);
 		urlStrb.append(password);
 		return urlStrb.toString();
 	}
@@ -178,9 +178,9 @@ public final class JMeterLoadTestUtils {
 	 */
 	private static String getFileUploadURL(final String path, final String ticket) {
 		final StringBuffer urlStrb = new StringBuffer(path);
-		urlStrb.append(JMeterConstants.QUES);
-		urlStrb.append(JMeterConstants.TICKET_QRY);
-		urlStrb.append(JMeterConstants.EQL);
+		urlStrb.append(JMeterLoadTestConstants.QUES);
+		urlStrb.append(JMeterLoadTestConstants.TICKET_QRY);
+		urlStrb.append(JMeterLoadTestConstants.EQL);
 		urlStrb.append(ticket);
 		return urlStrb.toString();
 	}

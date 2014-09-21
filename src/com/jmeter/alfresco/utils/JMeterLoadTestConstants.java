@@ -20,7 +20,7 @@ package com.jmeter.alfresco.utils;
 /**
  * The Class JMeterConstants.
  */
-public final class JMeterConstants {
+public final class JMeterLoadTestConstants {
 
 	/** The Constant EMPTY. */
 	public static final String EMPTY = "";

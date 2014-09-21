@@ -31,7 +31,7 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
 import com.jmeter.alfresco.utils.ConfigReader;
-import com.jmeter.alfresco.utils.JMeterConstants;
+import com.jmeter.alfresco.utils.JMeterLoadTestConstants;
 import com.jmeter.alfresco.utils.JMeterLoadTestUtils;
 
 /**
@@ -45,10 +45,10 @@ public class AuthenticationTest extends AbstractJavaSamplerClient {
 	@Override
 	public Arguments getDefaultParameters() {
 		final Arguments defaultParameters = new Arguments();
-		defaultParameters.addArgument(JMeterConstants.SERVER,
-				ConfigReader.getProperty(JMeterConstants.BASEPATH));
-		defaultParameters.addArgument(JMeterConstants.USERNAME,ConfigReader.getProperty(JMeterConstants.U));
-		defaultParameters.addArgument(JMeterConstants.PASSWORD,ConfigReader.getProperty(JMeterConstants.PW));
+		defaultParameters.addArgument(JMeterLoadTestConstants.SERVER,
+				ConfigReader.getProperty(JMeterLoadTestConstants.BASEPATH));
+		defaultParameters.addArgument(JMeterLoadTestConstants.USERNAME,ConfigReader.getProperty(JMeterLoadTestConstants.U));
+		defaultParameters.addArgument(JMeterLoadTestConstants.PASSWORD,ConfigReader.getProperty(JMeterLoadTestConstants.PW));
 		return defaultParameters;
 	}
 
@@ -70,10 +70,10 @@ public class AuthenticationTest extends AbstractJavaSamplerClient {
 		
 		System.out.println("[AuthenticationTest:] runTest() invoked..");
 	
-		final String serverAddress= context.getParameter(JMeterConstants.SERVER);
-		final String authURI = serverAddress+ConfigReader.getProperty(JMeterConstants.LOGIN_PATH);
-		final String username = context.getParameter(JMeterConstants.USERNAME);
-		final String password = context.getParameter(JMeterConstants.PASSWORD);
+		final String serverAddress= context.getParameter(JMeterLoadTestConstants.SERVER);
+		final String authURI = serverAddress+ConfigReader.getProperty(JMeterLoadTestConstants.LOGIN_PATH);
+		final String username = context.getParameter(JMeterLoadTestConstants.USERNAME);
+		final String password = context.getParameter(JMeterLoadTestConstants.PASSWORD);
 		
 		
 		final SampleResult result = new SampleResult();
@@ -88,10 +88,10 @@ public class AuthenticationTest extends AbstractJavaSamplerClient {
 			
 			System.out.println("[AuthenticationTest:] Ending test..");
 
-			result.setResponseMessage(responseMap.get(JMeterConstants.RESP_BODY));
+			result.setResponseMessage(responseMap.get(JMeterLoadTestConstants.RESP_BODY));
 			result.setSuccessful(true);
-			result.setResponseCode(responseMap.get(JMeterConstants.STATUS_CODE));
-			result.setContentType(responseMap.get(JMeterConstants.CONTENT_TYPE));
+			result.setResponseCode(responseMap.get(JMeterLoadTestConstants.STATUS_CODE));
+			result.setContentType(responseMap.get(JMeterLoadTestConstants.CONTENT_TYPE));
 			
 		} catch (Exception excp) {
 			result.sampleEnd(); // stop stop-watch
@@ -100,9 +100,9 @@ public class AuthenticationTest extends AbstractJavaSamplerClient {
 			// get stack trace as a String to return as document data
 			final StringWriter stringWriter = new StringWriter();
 			excp.printStackTrace(new PrintWriter(stringWriter));
-			result.setResponseData(stringWriter.toString(),JMeterConstants.ENCODING);
+			result.setResponseData(stringWriter.toString(),JMeterLoadTestConstants.ENCODING);
 			result.setDataType(org.apache.jmeter.samplers.SampleResult.TEXT);
-			result.setResponseCode(JMeterConstants.SERVER_ERR);
+			result.setResponseCode(JMeterLoadTestConstants.SERVER_ERR);
 		} 
 		return result;
 	}

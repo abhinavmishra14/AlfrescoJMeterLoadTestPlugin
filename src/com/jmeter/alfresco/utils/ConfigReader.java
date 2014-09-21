@@ -36,7 +36,7 @@ public final class ConfigReader {
 
     static{
     	try (InputStream inStream = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream(JMeterConstants.GLOBAL_PROPERTIESFILE)) {
+				.getResourceAsStream(JMeterLoadTestConstants.GLOBAL_PROPERTIESFILE)) {
 			KEYS.load(inStream);
 		} catch (IOException ioex) {
 			ioex.printStackTrace();
