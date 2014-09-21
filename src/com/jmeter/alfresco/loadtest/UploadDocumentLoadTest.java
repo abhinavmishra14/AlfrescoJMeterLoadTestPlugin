@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jmeter.alfresco.test;
+package com.jmeter.alfresco.loadtest;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,9 +38,9 @@ import com.jmeter.alfresco.utils.JMeterLoadTestConstants;
 import com.jmeter.alfresco.utils.JMeterLoadTestUtils;
 
 /**
- * The Class UploadDocumentTest.
+ * The Class UploadDocumentLoadTest.
  */
-public class UploadDocumentTest extends AbstractJavaSamplerClient {
+public class UploadDocumentLoadTest extends AbstractJavaSamplerClient {
 	
 	/* (non-Javadoc)
 	 * @see org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient#getDefaultParameters()
@@ -66,7 +66,7 @@ public class UploadDocumentTest extends AbstractJavaSamplerClient {
 	@Override
 	public SampleResult runTest(final JavaSamplerContext context) {
 		
-		try (FileOutputStream fileInStream = new FileOutputStream("UploadDocumentTest.log")) {
+		try (FileOutputStream fileInStream = new FileOutputStream("UploadDocumentLoadTest.log")) {
 			final PrintStream out = new PrintStream(fileInStream);
 			System.setOut(out);
 			System.setErr(out);
@@ -76,7 +76,7 @@ public class UploadDocumentTest extends AbstractJavaSamplerClient {
 			ioex.printStackTrace();
 		}
 		
-		System.out.println("[UploadDocumentTest:] runTest() invoked..");
+		System.out.println("[UploadDocumentLoadTest:] runTest() invoked..");
 
 		final String serverAddress= context.getParameter(JMeterLoadTestConstants.SERVER);
 		
@@ -97,7 +97,7 @@ public class UploadDocumentTest extends AbstractJavaSamplerClient {
 
 		final SampleResult result = new SampleResult();
 		try {
-			System.out.println("[UploadDocumentTest:] Starting test..");
+			System.out.println("[UploadDocumentLoadTest:] Starting load test..");
 			
 			final File fileObject = new File (inputUri);
 			result.sampleStart(); // start stop-watch
@@ -109,19 +109,19 @@ public class UploadDocumentTest extends AbstractJavaSamplerClient {
 				for (Iterator<File> iterator = setOfFiles.iterator(); iterator.hasNext();) {
 					final File fileObj = iterator.next();
 					//call document upload
-					responseBody.append(JMeterLoadTestUtils.processUpload(
+					responseBody.append(JMeterLoadTestUtils.documentUpload(
 							fileObj, authTicket, uploadURI, siteID,
 							uploadDir));
 					responseBody.append(JMeterLoadTestConstants.BR);
 			     }
 			}else{
-				responseBody.append(JMeterLoadTestUtils.processUpload(
+				responseBody.append(JMeterLoadTestUtils.documentUpload(
 						fileObject, authTicket, uploadURI, siteID,
 						uploadDir));
 			}
 			result.sampleEnd();// end the stop-watch
 		
-			System.out.println("[UploadDocumentTest:] Ending test..");
+			System.out.println("[UploadDocumentLoadTest:] Ending load test..");
 
 			result.setResponseMessage(responseBody.toString());
 			result.setSuccessful(true);
@@ -131,7 +131,7 @@ public class UploadDocumentTest extends AbstractJavaSamplerClient {
 		} catch (Exception excp) {
 			result.sampleEnd(); // stop stop-watch
 			result.setSuccessful(false);
-			result.setResponseMessage("[UploadDocumentTest:] Exception: " + excp);
+			result.setResponseMessage("[UploadDocumentLoadTest:] Exception: " + excp);
 			// get stack trace as a String to return as document data
 			final StringWriter stringWriter = new StringWriter();
 			excp.printStackTrace(new PrintWriter(stringWriter));

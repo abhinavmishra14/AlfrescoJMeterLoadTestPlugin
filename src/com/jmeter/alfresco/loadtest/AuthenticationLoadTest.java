@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jmeter.alfresco.test;
+package com.jmeter.alfresco.loadtest;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -35,9 +35,9 @@ import com.jmeter.alfresco.utils.JMeterLoadTestConstants;
 import com.jmeter.alfresco.utils.JMeterLoadTestUtils;
 
 /**
- * The Class AuthenticationTest.
+ * The Class AuthenticationLoadTest.
  */
-public class AuthenticationTest extends AbstractJavaSamplerClient {
+public class AuthenticationLoadTest extends AbstractJavaSamplerClient {
 
 	/* (non-Javadoc)
 	 * @see org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient#getDefaultParameters()
@@ -58,7 +58,7 @@ public class AuthenticationTest extends AbstractJavaSamplerClient {
 	@Override
 	public SampleResult runTest(final JavaSamplerContext context) {
 		
-		try (FileOutputStream fileInStream = new FileOutputStream("AuthenticationTest.log")) {
+		try (FileOutputStream fileInStream = new FileOutputStream("AuthenticationLoadTest.log")) {
 			final PrintStream out = new PrintStream(fileInStream);
 			System.setOut(out);
 			System.setErr(out);
@@ -68,7 +68,7 @@ public class AuthenticationTest extends AbstractJavaSamplerClient {
 			ioex.printStackTrace();
 		}
 		
-		System.out.println("[AuthenticationTest:] runTest() invoked..");
+		System.out.println("[AuthenticationLoadTest:] runTest() invoked..");
 	
 		final String serverAddress= context.getParameter(JMeterLoadTestConstants.SERVER);
 		final String authURI = serverAddress+ConfigReader.getProperty(JMeterLoadTestConstants.LOGIN_PATH);
@@ -78,7 +78,7 @@ public class AuthenticationTest extends AbstractJavaSamplerClient {
 		
 		final SampleResult result = new SampleResult();
 		try {
-			System.out.println("[AuthenticationTest:] Starting test..");
+			System.out.println("[AuthenticationLoadTest:] Starting load test..");
 			
 			result.sampleStart(); // start stop-watch
 			
@@ -86,7 +86,7 @@ public class AuthenticationTest extends AbstractJavaSamplerClient {
 			
 			result.sampleEnd();// end the stop-watch
 			
-			System.out.println("[AuthenticationTest:] Ending test..");
+			System.out.println("[AuthenticationLoadTest:] Ending  load test..");
 
 			result.setResponseMessage(responseMap.get(JMeterLoadTestConstants.RESP_BODY));
 			result.setSuccessful(true);
@@ -96,7 +96,7 @@ public class AuthenticationTest extends AbstractJavaSamplerClient {
 		} catch (Exception excp) {
 			result.sampleEnd(); // stop stop-watch
 			result.setSuccessful(false);
-			result.setResponseMessage("[AuthenticationTest:] Exception: " + excp);
+			result.setResponseMessage("[AuthenticationLoadTest:] Exception: " + excp);
 			// get stack trace as a String to return as document data
 			final StringWriter stringWriter = new StringWriter();
 			excp.printStackTrace(new PrintWriter(stringWriter));

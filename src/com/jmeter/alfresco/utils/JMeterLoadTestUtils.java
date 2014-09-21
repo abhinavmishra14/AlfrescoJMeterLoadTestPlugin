@@ -74,6 +74,7 @@ public final class JMeterLoadTestUtils {
 		}
 		return responseMap;
 	}
+	
 		
 	/**
 	 * Gets the auth ticket.
@@ -93,18 +94,19 @@ public final class JMeterLoadTestUtils {
 		return ticketFrmResponse.substring(startindex, endindex);
 	}
 	
+
 	/**
-	 * Process upload.
+	 * Document upload.
 	 *
 	 * @param docFileObj the doc file obj
 	 * @param authTicket the auth ticket
 	 * @param uploadURI the upload uri
 	 * @param siteID the site id
 	 * @param uploadDir the upload dir
-	 * @return the map
-	 * @throws IOException 
+	 * @return the string
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static String processUpload(final File docFileObj,
+	public static String documentUpload(final File docFileObj,
 			final String authTicket, final String uploadURI,
 			final String siteID, final String uploadDir) throws IOException {
 
@@ -113,13 +115,13 @@ public final class JMeterLoadTestUtils {
 		try {
 			final String uploadURL = getFileUploadURL(uploadURI,authTicket);
 			
-			System.out.println("[JMeterLoadTestUtils:] processUpload() | Upload URL: " + uploadURL);
+			System.out.println("[JMeterLoadTestUtils:] documentUpload() | Upload URL: " + uploadURL);
 			
 			final HttpClient httpClient = new HttpClient();
 			postRequest = new PostMethod(uploadURL);
 		    final String mimeType = getMimeType(docFileObj);
 			final String docName = docFileObj.getName();
-			System.out.println("[JMeterLoadTestUtils:] processUpload() | Uploading document: "+docName+" , content-type: "+mimeType);
+			System.out.println("[JMeterLoadTestUtils:] documentUpload() | Uploading document: "+docName+" , content-type: "+mimeType);
 
 			final Part[] parts = {
 					new FilePart("filedata", docName, docFileObj, mimeType,null),
@@ -135,7 +137,7 @@ public final class JMeterLoadTestUtils {
 			final int statusCode = httpClient.executeMethod(postRequest);	
 			
 			uploadResponse = postRequest.getResponseBodyAsString();
-			System.out.println("[JMeterLoadTestUtils:] processUpload() | Upload status: "+statusCode+"  \nUpload response: "+uploadResponse);
+			System.out.println("[JMeterLoadTestUtils:] documentUpload() | Upload status: "+statusCode+"  \nUpload response: "+uploadResponse);
 		
 		} finally{
 			if(postRequest!=null){
