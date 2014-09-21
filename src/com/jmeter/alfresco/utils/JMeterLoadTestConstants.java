@@ -28,7 +28,6 @@ public final class JMeterLoadTestConstants {
 	/** The Constant BR. */
 	public static final String BR = "\n";
 
-
 	/** The Constant SERVER. */
 	public static final String SERVER = "server";
 
@@ -47,7 +46,6 @@ public final class JMeterLoadTestConstants {
 	/** The Constant DESC. */
 	public static final String DESC = "description";
 
-	
 	/** The Constant U. */
 	public static final String U = "u";
 	
