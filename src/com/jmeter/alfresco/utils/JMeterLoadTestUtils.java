@@ -68,7 +68,9 @@ public final class JMeterLoadTestUtils {
 			responseMap.put(JMeterConstants.STATUS_CODE, String.valueOf(statusCode));
 			
 		} finally {
-			getRequest.releaseConnection();
+			if(getRequest!=null){
+				getRequest.releaseConnection();
+			}
 		}
 		return responseMap;
 	}
@@ -100,18 +102,21 @@ public final class JMeterLoadTestUtils {
 	 * @param siteID the site id
 	 * @param uploadDir the upload dir
 	 * @return the map
+	 * @throws IOException 
 	 */
-	public static String processUpload(final File docFileObj,final String authTicket,
-			final String uploadURI, final String siteID,final String uploadDir) {
+	public static String processUpload(final File docFileObj,
+			final String authTicket, final String uploadURI,
+			final String siteID, final String uploadDir) throws IOException {
 
 		String uploadResponse = JMeterConstants.EMPTY;
+		PostMethod postRequest = null;
 		try {
 			final String uploadURL = getFileUploadURL(uploadURI,authTicket);
 			
 			System.out.println("[JMeterLoadTestUtils:] processUpload() | Upload URL: " + uploadURL);
 			
 			final HttpClient httpClient = new HttpClient();
-			final PostMethod postRequest = new PostMethod(uploadURL);
+			postRequest = new PostMethod(uploadURL);
 		    final String mimeType = getMimeType(docFileObj);
 			final String docName = docFileObj.getName();
 			System.out.println("[JMeterLoadTestUtils:] processUpload() | Uploading document: "+docName+" , content-type: "+mimeType);
@@ -131,11 +136,12 @@ public final class JMeterLoadTestUtils {
 			
 			uploadResponse = postRequest.getResponseBodyAsString();
 			System.out.println("[JMeterLoadTestUtils:] processUpload() | Upload status: "+statusCode+"  \nUpload response: "+uploadResponse);
-			//releaseConnection http connection
-			postRequest.releaseConnection();
-
-		} catch (Exception excp) {
-			excp.printStackTrace();
+		
+		} finally{
+			if(postRequest!=null){
+				//releaseConnection http connection
+				postRequest.releaseConnection();
+			}
 		}
 		return uploadResponse;
 	}

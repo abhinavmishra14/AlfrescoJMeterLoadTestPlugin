@@ -19,6 +19,7 @@ package com.jmeter.alfresco.test;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -56,15 +57,17 @@ public class AuthenticationTest extends AbstractJavaSamplerClient {
 	 */
 	@Override
 	public SampleResult runTest(final JavaSamplerContext context) {
-		FileOutputStream fileInStream = null;
-		try {
-			fileInStream = new FileOutputStream("AuthenticationTest.log");
-		} catch (FileNotFoundException fnfExcp) {
+		
+		try (FileOutputStream fileInStream = new FileOutputStream("AuthenticationTest.log")) {
+			final PrintStream out = new PrintStream(fileInStream);
+			System.setOut(out);
+			System.setErr(out);
+		}catch (FileNotFoundException fnfExcp) {
 			fnfExcp.printStackTrace();
+		} catch (IOException ioex) {
+			ioex.printStackTrace();
 		}
-		final PrintStream out = new PrintStream(fileInStream);
-		System.setOut(out);
-		System.setErr(out);
+		
 		System.out.println("[AuthenticationTest:] runTest() invoked..");
 	
 		final String serverAddress= context.getParameter(JMeterConstants.SERVER);

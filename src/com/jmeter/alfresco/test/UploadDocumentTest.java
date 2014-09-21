@@ -66,15 +66,16 @@ public class UploadDocumentTest extends AbstractJavaSamplerClient {
 	@Override
 	public SampleResult runTest(final JavaSamplerContext context) {
 		
-		FileOutputStream fileInStream = null;
-		try {
-			fileInStream = new FileOutputStream("UploadDocumentTest.log");
-		} catch (FileNotFoundException fnfExcp) {
+		try (FileOutputStream fileInStream = new FileOutputStream("UploadDocumentTest.log")) {
+			final PrintStream out = new PrintStream(fileInStream);
+			System.setOut(out);
+			System.setErr(out);
+		}catch (FileNotFoundException fnfExcp) {
 			fnfExcp.printStackTrace();
+		} catch (IOException ioex) {
+			ioex.printStackTrace();
 		}
-		final PrintStream out = new PrintStream(fileInStream);
-		System.setOut(out);
-		System.setErr(out);
+		
 		System.out.println("[UploadDocumentTest:] runTest() invoked..");
 
 		final String serverAddress= context.getParameter(JMeterConstants.SERVER);
