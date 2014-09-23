@@ -30,8 +30,8 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
 import com.jmeter.alfresco.utils.ConfigReader;
-import com.jmeter.alfresco.utils.FtpUtils;
 import com.jmeter.alfresco.utils.Constants;
+import com.jmeter.alfresco.utils.FtpUtils;
 
 /**
  * The Class UploadDocumentTestFtp.
@@ -87,7 +87,7 @@ public class UploadDocumentTestFtp extends AbstractJavaSamplerClient {
 			System.out.println("[UploadDocumentTestFtp:] Starting load test..");
 			result.sampleStart(); // start stop-watch
 
-			final FtpUtils fileUtils = FtpUtils.getInstance();
+			final FtpUtils fileUtils = new FtpUtils();
 			fileUtils.uploadDirectoryOrFile(host, port, userName, password,
 					localDirOrFile, remoteDirOrFile);
 			

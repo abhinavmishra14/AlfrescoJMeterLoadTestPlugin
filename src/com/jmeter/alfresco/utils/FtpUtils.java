@@ -32,12 +32,9 @@ public final class FtpUtils {
 	/**
 	 * Instantiates a new fTP utils.
 	 */
-	private FtpUtils(){
+	public FtpUtils(){
 		super();
 	}
-
-	/** The instance. */
-	private static final FtpUtils FU_INSTANCE = new FtpUtils();
 	
 	/** The Constant EMPTY. */
 	private static final String EMPTY = "";
@@ -213,15 +210,5 @@ public final class FtpUtils {
 	 */
 	private String convertToLinuxFormat(final String inputPath) {
 		return inputPath.replace(FILE_SEPERATOR_WIN, FILE_SEPERATOR_LINUX);
-	}
-	
-	
-	/**
-	 * Gets the single instance of FTPUtils.
-	 *
-	 * @return single instance of FTPUtils
-	 */
-	public static FtpUtils getInstance(){
-		return FU_INSTANCE;
 	}
 }
