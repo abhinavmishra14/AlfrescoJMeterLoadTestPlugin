@@ -27,8 +27,8 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 import com.jmeter.alfresco.utils.DirectoryTraverser;
-import com.jmeter.alfresco.utils.JMeterLoadTestConstants;
-import com.jmeter.alfresco.utils.JMeterLoadTestUtils;
+import com.jmeter.alfresco.utils.Constants;
+import com.jmeter.alfresco.utils.HttpUtils;
 
 /**
  * The Class UploadDocumentUnitTest.
@@ -46,13 +46,13 @@ public class UploadDocumentUnitTest extends TestCase{
 		final String authURI =  "http://127.0.0.1:8080/alfresco/service/api/login";
 		final String username = "admin";
 		final String password = "admin";
-		final String inputUri = "C:/Users/Abhi/Desktop/flats"; // files to be uploaded from this directory
+		final String inputUri = "C:/Users/Abhi/Desktop/data"; // files to be uploaded from this directory
 		final String siteID = "testpoc"; //id of the site for e.g if site name is TestPoc the id will be testpoc
 		final String uploadDir = "testUpload"; //directory created under document library
 		
-		String authTicket = JMeterLoadTestConstants.EMPTY;
+		String authTicket = Constants.EMPTY;
 		try {
-			authTicket = JMeterLoadTestUtils.getAuthTicket(authURI, username, password);
+			authTicket = HttpUtils.getAuthTicket(authURI, username, password);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -66,13 +66,13 @@ public class UploadDocumentUnitTest extends TestCase{
 			for (Iterator<File> iterator = setOfFiles.iterator(); iterator.hasNext();) {
 				final File fileObj = iterator.next();
 				//call document upload
-				responseBody.append(JMeterLoadTestUtils.documentUpload(
+				responseBody.append(HttpUtils.documentUpload(
 						fileObj, authTicket, uploadURI, siteID,
 						uploadDir));
-				responseBody.append(JMeterLoadTestConstants.BR);
+				responseBody.append(Constants.BR);
 		     }
 		}else{
-			responseBody.append(JMeterLoadTestUtils.documentUpload(
+			responseBody.append(HttpUtils.documentUpload(
 					fileObject, authTicket, uploadURI, siteID,
 					uploadDir));
 		}
