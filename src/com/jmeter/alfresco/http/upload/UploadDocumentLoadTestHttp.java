@@ -18,7 +18,6 @@
 package com.jmeter.alfresco.http.upload;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -33,8 +32,8 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
 import com.jmeter.alfresco.utils.ConfigReader;
-import com.jmeter.alfresco.utils.DirectoryTraverser;
 import com.jmeter.alfresco.utils.Constants;
+import com.jmeter.alfresco.utils.DirectoryTraverser;
 import com.jmeter.alfresco.utils.HttpUtils;
 
 /**
@@ -66,20 +65,18 @@ public class UploadDocumentLoadTestHttp extends AbstractJavaSamplerClient {
 	@Override
 	public SampleResult runTest(final JavaSamplerContext context) {
 		
-		try (FileOutputStream fileInStream = new FileOutputStream("UploadDocumentLoadTestHttp.log")) {
-			final PrintStream out = new PrintStream(fileInStream);
+		try (final FileOutputStream fileInStream = new FileOutputStream(
+				"UploadDocumentLoadTestHttp.log");
+				final PrintStream out = new PrintStream(fileInStream);) {
 			System.setOut(out);
 			System.setErr(out);
-		}catch (FileNotFoundException fnfExcp) {
-			fnfExcp.printStackTrace();
 		} catch (IOException ioex) {
 			ioex.printStackTrace();
 		}
-		
+
 		System.out.println("[UploadDocumentLoadTestHttp:] runTest() invoked..");
 
 		final String serverAddress= context.getParameter(Constants.SERVER);
-		
 		final String uploadURI = serverAddress+ConfigReader.getProperty(Constants.UPLOAD_PATH);
 		final String authURI = serverAddress+ConfigReader.getProperty(Constants.LOGIN_PATH);
 		final String username = context.getParameter(Constants.USERNAME);

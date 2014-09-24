@@ -17,7 +17,6 @@
  */
 package com.jmeter.alfresco.http.auth;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -58,16 +57,15 @@ public class AuthenticationLoadTest extends AbstractJavaSamplerClient {
 	@Override
 	public SampleResult runTest(final JavaSamplerContext context) {
 		
-		try (FileOutputStream fileInStream = new FileOutputStream("AuthenticationLoadTest.log")) {
-			final PrintStream out = new PrintStream(fileInStream);
+		try (final FileOutputStream fileInStream = new FileOutputStream(
+				"AuthenticationLoadTest.log");
+				final PrintStream out = new PrintStream(fileInStream);) {
 			System.setOut(out);
 			System.setErr(out);
-		}catch (FileNotFoundException fnfExcp) {
-			fnfExcp.printStackTrace();
 		} catch (IOException ioex) {
 			ioex.printStackTrace();
 		}
-		
+
 		System.out.println("[AuthenticationLoadTest:] runTest() invoked..");
 	
 		final String serverAddress= context.getParameter(Constants.SERVER);

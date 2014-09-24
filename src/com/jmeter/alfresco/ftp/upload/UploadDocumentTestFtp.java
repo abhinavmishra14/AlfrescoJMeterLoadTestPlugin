@@ -17,7 +17,6 @@
  */
 package com.jmeter.alfresco.ftp.upload;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -63,14 +62,13 @@ public class UploadDocumentTestFtp extends AbstractJavaSamplerClient {
 	@Override
 	public SampleResult runTest(final JavaSamplerContext context) {
 		
-		try (FileOutputStream fileInStream = new FileOutputStream("UploadDocumentTestFtp.log")) {
-			final PrintStream out = new PrintStream(fileInStream);
+		try (final FileOutputStream fileInStream = new FileOutputStream(
+				"UploadDocumentTestFtp.log");
+			final PrintStream out = new PrintStream(fileInStream);) {
 			System.setOut(out);
 			System.setErr(out);
-		}catch (FileNotFoundException fnfExcp) {
-			fnfExcp.printStackTrace();
-		} catch (IOException ioex) {
-			ioex.printStackTrace();
+		}catch (IOException ioex) {
+		  ioex.printStackTrace();
 		}
 		
 		System.out.println("[UploadDocumentTestFtp:] runTest() invoked..");
@@ -88,12 +86,12 @@ public class UploadDocumentTestFtp extends AbstractJavaSamplerClient {
 			result.sampleStart(); // start stop-watch
 
 			final FtpUtils fileUtils = new FtpUtils();
-			fileUtils.uploadDirectoryOrFile(host, port, userName, password,
+			final String responseMessage = fileUtils.uploadDirectoryOrFile(host, port, userName, password,
 					localDirOrFile, remoteDirOrFile);
 			
 			result.sampleEnd();// end the stop-watch
 			System.out.println("[UploadDocumentTestFtp:] Ending load test..");
-			result.setResponseMessage("OK");
+			result.setResponseMessage("Response OK, "+responseMessage);
 			result.setSuccessful(true);
 			result.setResponseCodeOK();
 			result.setContentType(Constants.EMPTY);

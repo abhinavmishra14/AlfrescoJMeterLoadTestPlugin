@@ -25,17 +25,12 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
 /**
- * The Class FtpUtils.
+ * The Class FtpUtils.<br/>
+ * This class is a utility class, will be used to upload a file or directory to
+ * remote host via FTP.
  */
 public final class FtpUtils {
-	
-	/**
-	 * Instantiates a new fTP utils.
-	 */
-	public FtpUtils(){
-		super();
-	}
-	
+
 	/** The Constant EMPTY. */
 	private static final String EMPTY = "";
 	
@@ -52,88 +47,85 @@ public final class FtpUtils {
 	 * @param port the port
 	 * @param userName the user name
 	 * @param password the password
-	 * @param localDirOrFile the local dir
-	 * @param remoteDirOrFile the remote dir
+	 * @param fromLocalDirOrFile the local dir
+	 * @param toRemoteDirOrFile the remote dir
 	 */
-	public void uploadDirectoryOrFile(final String host, final int port,
+	public String uploadDirectoryOrFile(final String host, final int port,
 			final String userName, final String password,
-			final String localDirOrFile, final String remoteDirOrFile) {
+			final String fromLocalDirOrFile, final String toRemoteDirOrFile) {
 		
 		final FTPClient ftpClient = new FTPClient();
+		String responseMessage = Constants.EMPTY;
 		try {
-			
 			// Connect and login to get the session
 			ftpClient.connect(host, port);
 			ftpClient.login(userName, password);
-			
 			//Use local passive mode to pass fire-wall
 			ftpClient.enterLocalPassiveMode();
-			System.out.println("Connection successful!\n");
-			
-			final File localDirOrFileObj = new File(localDirOrFile);
-
+			System.out.println("Successfully connected to remote host!\n");
+			final File localDirOrFileObj = new File(fromLocalDirOrFile);
 			if (localDirOrFileObj.isFile()) {
-				System.out.println("Uploading file: "+ localDirOrFile);
-				uploadSingleFile(ftpClient, localDirOrFile, remoteDirOrFile
-						+ FILE_SEPERATOR_LINUX + localDirOrFileObj.getName());
+				System.out.println("Uploading file: "+ fromLocalDirOrFile);
 				
-				System.out.println("Upload completed!");
+				uploadFile(ftpClient, fromLocalDirOrFile, toRemoteDirOrFile
+						+ FILE_SEPERATOR_LINUX + localDirOrFileObj.getName());				
 			} else {
-				uploadDirectory(ftpClient, remoteDirOrFile, localDirOrFile,EMPTY);
+				uploadDirectory(ftpClient, toRemoteDirOrFile, fromLocalDirOrFile,EMPTY);
 			}
-			
+
 			//Log out and disconnect from the server once FTP operation is completed.
 			ftpClient.logout();
 			ftpClient.disconnect();
+			responseMessage = "Upload completed, See the log file for more details!";
+			System.out.println(responseMessage);
 			
-			System.out.println("\nDisconnected from the remote host..");
-			
+			System.out.println("\nSuccessfully disconnected to remote host!");
 		} catch (IOException ioexcp) {
+			responseMessage = ioexcp.getMessage();
 			ioexcp.printStackTrace();
 		}
+		
+		return responseMessage;
 	}
 	
 	/**
 	 * Upload directory.
 	 *
 	 * @param ftpClient the ftp client
-	 * @param remoteDir the remote dir path
-	 * @param localParentDir the local parent dir
+	 * @param toRemoteDir the to remote dir
+	 * @param fromLocalParentDir the from local parent dir
 	 * @param remoteParentDir the remote parent dir
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	private void uploadDirectory(final FTPClient ftpClient,
-			final String remoteDir, String localParentDir,
+			final String toRemoteDir, String fromLocalParentDir,
 			final String remoteParentDir) throws IOException {
 
-		localParentDir = convertToLinuxFormat(localParentDir);
-		localParentDir = checkLinuxSeperator(localParentDir);
+		fromLocalParentDir = convertToLinuxFormat(fromLocalParentDir);
+		fromLocalParentDir = checkLinuxSeperator(fromLocalParentDir);
 		
-		System.out.println("Listing the directory tree: " + localParentDir);
+		System.out.println("Listing the directory tree: " + fromLocalParentDir);
 
-		final File localDir = new File(localParentDir);
+		final File localDir = new File(fromLocalParentDir);
 		final File[] subFiles = localDir.listFiles();
 		
 		if (subFiles != null && subFiles.length > 0) {
 			for (final File item : subFiles) {
 				
-				String remoteFilePath = remoteDir + FILE_SEPERATOR_LINUX + remoteParentDir
+				String remoteFilePath = toRemoteDir + FILE_SEPERATOR_LINUX + remoteParentDir
 						+ FILE_SEPERATOR_LINUX + item.getName();
-				
 				if (EMPTY.equals(remoteParentDir)) {
-					remoteFilePath = remoteDir + FILE_SEPERATOR_LINUX + item.getName();
+					remoteFilePath = toRemoteDir + FILE_SEPERATOR_LINUX + item.getName();
 				}
 
 				if (item.isFile()) {
 					// Upload the file
 					final String localFilePath = convertToLinuxFormat(item.getAbsolutePath());
-					
-					System.out.println("Uploading file: "
-							+ localFilePath);
-					final boolean isFileUploaded = uploadSingleFile(ftpClient,
+					System.out.println("Uploading file: "+ localFilePath);
+					final boolean isFileUploaded = uploadFile(ftpClient,
 							localFilePath, remoteFilePath);
 					if (isFileUploaded) {
-						System.out.println("File uploaded to: '"
+						System.out.println("File uploaded: '"
 								+ remoteFilePath+"'");
 					} else {
 						System.err.println("Could not upload the file: '"
@@ -145,11 +137,10 @@ public final class FtpUtils {
 					final boolean isDirCreated = ftpClient.makeDirectory(remoteFilePath);
 					if (isDirCreated) {
 						System.out.println("Created the directory: '"
-								+ remoteFilePath+"' to remote host");
+								+ remoteFilePath+"' on remote host");
 					} else {
-						
 						System.err.println("Could not create the directory: '"
-								+ remoteFilePath+"' to remote host, directory may be existing!");
+								+ remoteFilePath+"' on remote host, directory may be existing!");
 					}
 
 					//Directory created, now upload the sub directory
@@ -158,32 +149,34 @@ public final class FtpUtils {
 						parentDirectory = item.getName();
 					}
 
-					localParentDir = item.getAbsolutePath();
-					uploadDirectory(ftpClient, remoteDir, localParentDir,
+					fromLocalParentDir = item.getAbsolutePath();
+					//Call to uploadDirectory to upload the sub-directories
+					uploadDirectory(ftpClient, toRemoteDir, fromLocalParentDir,
 							parentDirectory);
 				}
 			}
 		}
 	}
 
+
 	/**
-	 * Upload single file.
+	 * Upload file.
 	 *
 	 * @param ftpClient the ftp client
-	 * @param localFilePath the local file path
-	 * @param remoteFileURI the remote file path
+	 * @param frmLocalFilePath the frm local file path
+	 * @param toRemoteFilePath the to remote file path
 	 * @return true, if successful
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	private boolean uploadSingleFile(final FTPClient ftpClient,
-			final String localFilePath, final String remoteFileURI)
+	private boolean uploadFile(final FTPClient ftpClient,
+			final String frmLocalFilePath, final String toRemoteFilePath)
 			throws IOException {
 			
-		final File localFile = new File(localFilePath);
+		final File localFile = new File(frmLocalFilePath);
 		final InputStream inputStream = new FileInputStream(localFile);
 		try {
 			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-			return ftpClient.storeFile(remoteFileURI, inputStream);
+			return ftpClient.storeFile(toRemoteFilePath, inputStream);
 		} finally {
 			inputStream.close();
 		}
