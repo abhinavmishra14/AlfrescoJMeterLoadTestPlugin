@@ -70,10 +70,12 @@ public class UploadDocumentHttpTest extends TestCase{
 			for (Iterator<File> iterator = setOfFiles.iterator(); iterator.hasNext();) {
 				final File fileObj = iterator.next();
 				//call document upload
-				responseBody.append(httpUtils.documentUpload(
-						fileObj, authTicket, uploadURI, siteID,
-						uploadDir));
-				responseBody.append(Constants.BR);
+				if(fileObj.isFile()){
+					responseBody.append(httpUtils.documentUpload(
+							fileObj, authTicket, uploadURI, siteID,
+							uploadDir));
+					responseBody.append(Constants.BR);
+				}
 		     }
 		}else{
 			responseBody.append(httpUtils.documentUpload(

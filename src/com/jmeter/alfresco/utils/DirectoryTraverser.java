@@ -52,14 +52,14 @@ public final class DirectoryTraverser {
 	 * Gets the uris recursive.<br/>
 	 * Recursively traverse each directory and uris of files.
 	 *
-	 * @param aStartingDir the a starting dir
+	 * @param startDir the a starting dir
 	 * @return the uris recursive
 	 * @throws FileNotFoundException the file not found exception
 	 */
-	private static Set<File> getUrisRecursive(final File aStartingDir)
+	private static Set<File> getUrisRecursive(final File startDir)
 			throws FileNotFoundException {
 		final Set<File> sortedSetOfFiles = new HashSet<File>();
-		final File[] filesAndDirs = aStartingDir.listFiles();
+		final File[] filesAndDirs = startDir.listFiles();
 		final List<File> filesDirs = Arrays.asList(filesAndDirs);
 		final Iterator<File> filesDirsItr = filesDirs.iterator();
 		while (filesDirsItr.hasNext()) {

@@ -107,10 +107,12 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 				for (final Iterator<File> iterator = setOfFiles.iterator(); iterator.hasNext();) {
 					final File fileObj = iterator.next();
 					//call document upload
-					responseBody.append(httpUtils.documentUpload(
-							fileObj, authTicket, uploadUri, siteID,
-							uploadDir));
-					responseBody.append(Constants.BR);
+					if(fileObj.isFile()){
+						responseBody.append(httpUtils.documentUpload(
+								fileObj, authTicket, uploadUri, siteID,
+								uploadDir));
+						responseBody.append(Constants.BR);
+					}
 			     }
 			}else{
 				responseBody.append(httpUtils.documentUpload(
