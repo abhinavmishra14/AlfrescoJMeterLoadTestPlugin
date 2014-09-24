@@ -76,7 +76,7 @@ public final class FtpUtils {
 			//Log out and disconnect from the server once FTP operation is completed.
 			ftpClient.logout();
 			ftpClient.disconnect();
-			responseMessage = "Upload completed, See the log file for more details!";
+			responseMessage = "Upload completed successfully!";
 			System.out.println(responseMessage);
 			
 			System.out.println("\nSuccessfully disconnected to remote host!");

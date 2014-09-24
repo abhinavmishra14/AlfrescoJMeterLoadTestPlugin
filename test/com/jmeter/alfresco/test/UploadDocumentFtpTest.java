@@ -47,6 +47,6 @@ public class UploadDocumentFtpTest extends TestCase{
 		final FtpUtils fileUtils = new FtpUtils();
 		final String uploadResp= fileUtils.uploadDirectoryOrFile(host, port, userName, password,
 				localDir, remoteDir);
-		assertEquals("Upload completed, See the log file for more details!", uploadResp);
+		assertEquals("Upload completed successfully!", uploadResp);
 	}
 }
