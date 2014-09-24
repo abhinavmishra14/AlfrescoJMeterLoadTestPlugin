@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -102,7 +103,8 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 
 			//if uri is a directory the upload all files..
 			if(fileObject.isDirectory()){
-				final Set<File> setOfFiles = DirectoryTraverser.getFileUris(fileObject);
+				final Set<File> setOfFiles = Collections.unmodifiableSet(
+						DirectoryTraverser.getFileUris(fileObject));
 				for (Iterator<File> iterator = setOfFiles.iterator(); iterator.hasNext();) {
 					final File fileObj = iterator.next();
 					//call document upload
