@@ -37,9 +37,9 @@ import com.jmeter.alfresco.utils.DirectoryTraverser;
 import com.jmeter.alfresco.utils.HttpUtils;
 
 /**
- * The Class UploadDocumentLoadTestHttp.
+ * The Class UploadDocumentTestHttp.
  */
-public class UploadDocumentLoadTestHttp extends AbstractJavaSamplerClient {
+public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 	
 	/* (non-Javadoc)
 	 * @see org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient#getDefaultParameters()
@@ -66,7 +66,7 @@ public class UploadDocumentLoadTestHttp extends AbstractJavaSamplerClient {
 	public SampleResult runTest(final JavaSamplerContext context) {
 		
 		try (final FileOutputStream fileInStream = new FileOutputStream(
-				"UploadDocumentLoadTestHttp.log");
+				"UploadDocumentTestHttp.log");
 				final PrintStream out = new PrintStream(fileInStream);) {
 			System.setOut(out);
 			System.setErr(out);
@@ -74,7 +74,7 @@ public class UploadDocumentLoadTestHttp extends AbstractJavaSamplerClient {
 			ioex.printStackTrace();
 		}
 
-		System.out.println("[UploadDocumentLoadTestHttp:] runTest() invoked..");
+		System.out.println("[UploadDocumentTestHttp:] runTest() invoked..");
 
 		final String serverAddress= context.getParameter(Constants.SERVER);
 		final String uploadURI = serverAddress+ConfigReader.getProperty(Constants.UPLOAD_PATH);
@@ -94,7 +94,7 @@ public class UploadDocumentLoadTestHttp extends AbstractJavaSamplerClient {
 
 		final SampleResult result = new SampleResult();
 		try {
-			System.out.println("[UploadDocumentLoadTestHttp:] Starting load test..");
+			System.out.println("[UploadDocumentTestHttp:] Starting load test..");
 			
 			final File fileObject = new File (inputUri);
 			result.sampleStart(); // start stop-watch
@@ -118,7 +118,7 @@ public class UploadDocumentLoadTestHttp extends AbstractJavaSamplerClient {
 			}
 			result.sampleEnd();// end the stop-watch
 		
-			System.out.println("[UploadDocumentLoadTestHttp:] Ending load test..");
+			System.out.println("[UploadDocumentTestHttp:] Ending load test..");
 
 			result.setResponseMessage(responseBody.toString());
 			result.setSuccessful(true);
@@ -128,7 +128,7 @@ public class UploadDocumentLoadTestHttp extends AbstractJavaSamplerClient {
 		} catch (Exception excp) {
 			result.sampleEnd(); // stop stop-watch
 			result.setSuccessful(false);
-			result.setResponseMessage("[UploadDocumentLoadTestHttp:] Exception: " + excp);
+			result.setResponseMessage("[UploadDocumentTestHttp:] Exception: " + excp);
 			// get stack trace as a String to return as document data
 			final StringWriter stringWriter = new StringWriter();
 			excp.printStackTrace(new PrintWriter(stringWriter));
