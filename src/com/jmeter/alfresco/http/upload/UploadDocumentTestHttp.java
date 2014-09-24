@@ -102,9 +102,9 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 
 			//if uri is a directory the upload all files..
 			if(fileObject.isDirectory()){
-				final Set<File> setOfFiles = Collections.unmodifiableSet(
+				final Set<File> setOfUris = Collections.unmodifiableSet(
 						DirectoryTraverser.getFileUris(fileObject));
-				for (final Iterator<File> iterator = setOfFiles.iterator(); iterator.hasNext();) {
+				for (final Iterator<File> iterator = setOfUris.iterator(); iterator.hasNext();) {
 					final File fileObj = iterator.next();
 					//call document upload
 					if(fileObj.isFile()){
