@@ -32,6 +32,9 @@ import com.jmeter.alfresco.utils.HttpUtils;
 
 /**
  * The Class UploadDocumentHttpTest.
+ * 
+ * @author Abhinav Kumar Mishra
+ * @since 2014
  */
 public class UploadDocumentHttpTest extends TestCase{
 
@@ -50,9 +53,10 @@ public class UploadDocumentHttpTest extends TestCase{
 		final String siteID = "testpoc"; //id of the site for e.g if site name is TestPoc the id will be testpoc
 		final String uploadDir = "testUpload"; //directory created under document library
 		
+		final HttpUtils httpUtils = new HttpUtils();
 		String authTicket = Constants.EMPTY;
 		try {
-			authTicket = HttpUtils.getAuthTicket(authURI, username, password);
+			authTicket = httpUtils.getAuthTicket(authURI, username, password);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -66,13 +70,13 @@ public class UploadDocumentHttpTest extends TestCase{
 			for (Iterator<File> iterator = setOfFiles.iterator(); iterator.hasNext();) {
 				final File fileObj = iterator.next();
 				//call document upload
-				responseBody.append(HttpUtils.documentUpload(
+				responseBody.append(httpUtils.documentUpload(
 						fileObj, authTicket, uploadURI, siteID,
 						uploadDir));
 				responseBody.append(Constants.BR);
 		     }
 		}else{
-			responseBody.append(HttpUtils.documentUpload(
+			responseBody.append(httpUtils.documentUpload(
 					fileObject, authTicket, uploadURI, siteID,
 					uploadDir));
 		}

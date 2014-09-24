@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -32,13 +32,21 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.ParseException;
 
 /**
  * The Class HttpUtils.
+ * 
+ * @author Abhinav Kumar Mishra
+ * @since 2014
  */
 public final class HttpUtils {
-
+	
+	/** The Constant logger. */
+	private static final Log LOG = LogFactory.getLog(HttpUtils.class);
+	
 	/**
 	 * Gets the login response.
 	 *
@@ -49,19 +57,18 @@ public final class HttpUtils {
 	 * @throws ParseException the parse exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static Map<String, String> getAuthResponse(final String authURI,
+	public Map<String, String> getAuthResponse(final String authURI,
 			final String username, final String password)
 			throws ParseException, IOException {
 		
-		System.out.println("[JMeterLoadTestUtils:] Authenticating request..");
-		final Map<String, String> responseMap = new HashMap<String, String>();
+		LOG.info("Authenticating request..");
+		final Map<String, String> responseMap = new ConcurrentHashMap<String, String>();
 		GetMethod getRequest = null;
 		try {
 			final HttpClient httpclient = new HttpClient();
 			getRequest = new GetMethod(getAuthURL(authURI, username, password));
-			int statusCode = httpclient.executeMethod(getRequest);
-			System.out.println("[JMeterLoadTestUtils:] Auth Response Status: "+ statusCode
-					+"|"+ getRequest.getStatusText());
+			final int statusCode = httpclient.executeMethod(getRequest);
+			LOG.info("Auth Response Status: "+ statusCode+"|"+ getRequest.getStatusText());
 	
 			responseMap.put(Constants.RESP_BODY, getRequest.getResponseBodyAsString());
 			responseMap.put(Constants.CONTENT_TYPE, getRequest.getResponseHeader(Constants.CONTENT_TYPE_HDR).getValue());
@@ -85,12 +92,12 @@ public final class HttpUtils {
 	 * @return the auth ticket
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static String getAuthTicket(final String authURI,
+	public String getAuthTicket(final String authURI,
 			final String username, final String password) throws IOException {
 		final Map<String, String> responseMap = getAuthResponse(authURI, username, password);
 		final String ticketFrmResponse = responseMap.get(Constants.RESP_BODY);
-		int startindex = ticketFrmResponse.indexOf("TICKET");
-		int endindex = ticketFrmResponse.indexOf("</");
+		final int startindex = ticketFrmResponse.indexOf("TICKET");
+		final int endindex = ticketFrmResponse.indexOf("</");
 		return ticketFrmResponse.substring(startindex, endindex);
 	}
 	
@@ -106,7 +113,7 @@ public final class HttpUtils {
 	 * @return the string
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static String documentUpload(final File docFileObj,
+	public String documentUpload(final File docFileObj,
 			final String authTicket, final String uploadURI,
 			final String siteID, final String uploadDir) throws IOException {
 
@@ -115,13 +122,13 @@ public final class HttpUtils {
 		try {
 			final String uploadURL = getFileUploadURL(uploadURI,authTicket);
 			
-			System.out.println("[JMeterLoadTestUtils:] documentUpload() | Upload URL: " + uploadURL);
+			LOG.info("documentUpload() | Upload URL: " + uploadURL);
 			
 			final HttpClient httpClient = new HttpClient();
 			postRequest = new PostMethod(uploadURL);
 		    final String mimeType = getMimeType(docFileObj);
 			final String docName = docFileObj.getName();
-			System.out.println("[JMeterLoadTestUtils:] documentUpload() | Uploading document: "+docName+" , content-type: "+mimeType);
+			LOG.info("documentUpload() | Uploading document: "+docName+" , content-type: "+mimeType);
 
 			final Part[] parts = {
 					new FilePart("filedata", docName, docFileObj, mimeType,null),
@@ -137,7 +144,7 @@ public final class HttpUtils {
 			final int statusCode = httpClient.executeMethod(postRequest);	
 			
 			uploadResponse = postRequest.getResponseBodyAsString();
-			System.out.println("[JMeterLoadTestUtils:] documentUpload() | Upload status: "+statusCode+"  \nUpload response: "+uploadResponse);
+			LOG.info("documentUpload() | Upload status: "+statusCode+"  \nUpload response: "+uploadResponse);
 		
 		} finally{
 			if(postRequest!=null){
@@ -156,7 +163,7 @@ public final class HttpUtils {
 	 * @param password the password
 	 * @return the url
 	 */
-	private static String getAuthURL(final String path, final String username,
+	private String getAuthURL(final String path, final String username,
 			final String password) {
 		final StringBuffer urlStrb = new StringBuffer(path);
 		urlStrb.append(Constants.QUES);
@@ -178,7 +185,7 @@ public final class HttpUtils {
 	 * @param ticket the ticket
 	 * @return the string
 	 */
-	private static String getFileUploadURL(final String path, final String ticket) {
+	private String getFileUploadURL(final String path, final String ticket) {
 		final StringBuffer urlStrb = new StringBuffer(path);
 		urlStrb.append(Constants.QUES);
 		urlStrb.append(Constants.TICKET_QRY);
@@ -194,7 +201,7 @@ public final class HttpUtils {
 	 * @return the mime type
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static String getMimeType(final File fileObj) throws IOException {
+	public String getMimeType(final File fileObj) throws IOException {
 		final Path source = Paths.get(fileObj.getPath());
 		return Files.probeContentType(source);
 	}

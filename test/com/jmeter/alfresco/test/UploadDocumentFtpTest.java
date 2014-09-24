@@ -27,6 +27,9 @@ import com.jmeter.alfresco.utils.FtpUtils;
 
 /**
  * The Class UploadDocumentHttpTest.
+ * 
+ * @author Abhinav Kumar Mishra
+ * @since 2014
  */
 public class UploadDocumentFtpTest extends TestCase{
 

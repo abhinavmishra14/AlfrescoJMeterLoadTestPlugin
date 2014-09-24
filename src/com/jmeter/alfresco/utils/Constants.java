@@ -19,6 +19,9 @@ package com.jmeter.alfresco.utils;
 
 /**
  * The Class Constants.
+ * 
+ * @author Abhinav Kumar Mishra
+ * @since 2014
  */
 public final class Constants {
 
@@ -88,8 +91,8 @@ public final class Constants {
 	/** The Constant MIME_TYPE. */
 	public static final String MIME_TYPE = "application/json";
 
-	/** The Constant GLOBAL_PROPERTIESFILE. */
-	public static final String GLOBAL_PROPERTIESFILE = "config.properties";
+	/** The Constant CONFIG. */
+	public static final String CONFIG = "config.properties";
 
 	/** The Constant TICKET_QRY. */
 	public static final String TICKET_QRY = "alf_ticket";

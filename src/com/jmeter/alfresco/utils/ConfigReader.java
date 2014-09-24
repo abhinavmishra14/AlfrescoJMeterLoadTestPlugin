@@ -27,7 +27,7 @@ import java.util.Properties;
  * value pairs of properties and returns when fetched using keys.
  *
  * @author Abhinav Kumar Mishra
- * @since 2013
+ * @since 2014
  */
 public final class ConfigReader {
 
@@ -36,7 +36,7 @@ public final class ConfigReader {
 
     static{
     	try (InputStream inStream = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream(Constants.GLOBAL_PROPERTIESFILE)) {
+				.getResourceAsStream(Constants.CONFIG)) {
 			KEYS.load(inStream);
 		} catch (IOException ioex) {
 			ioex.printStackTrace();
@@ -58,14 +58,5 @@ public final class ConfigReader {
 	 */
 	public static String getProperty(final String property) {
 		return KEYS.getProperty(property);
-	}
-	
-	/**
-	 * The main method.
-	 *
-	 * @param args the arguments
-	 */
-	public static void main(String[] args) {
-		System.out.println(getProperty("u"));
 	}
 }

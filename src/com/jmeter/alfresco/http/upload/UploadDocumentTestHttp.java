@@ -18,15 +18,15 @@
 package com.jmeter.alfresco.http.upload;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
@@ -39,8 +39,14 @@ import com.jmeter.alfresco.utils.HttpUtils;
 
 /**
  * The Class UploadDocumentTestHttp.
+ * 
+ * @author Abhinav Kumar Mishra
+ * @since 2014
  */
 public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
+	
+	/** The Constant logger. */
+	private static final Log LOG = LogFactory.getLog(UploadDocumentTestHttp.class);
 	
 	/* (non-Javadoc)
 	 * @see org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient#getDefaultParameters()
@@ -65,37 +71,30 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 	 */
 	@Override
 	public SampleResult runTest(final JavaSamplerContext context) {
-		
-		try (final FileOutputStream fileInStream = new FileOutputStream(
-				"UploadDocumentTestHttp.log");
-				final PrintStream out = new PrintStream(fileInStream);) {
-			System.setOut(out);
-			System.setErr(out);
-		} catch (IOException ioex) {
-			ioex.printStackTrace();
-		}
-
-		System.out.println("[UploadDocumentTestHttp:] runTest() invoked..");
+	
+		LOG.info("runTest() invoked..");
 
 		final String serverAddress= context.getParameter(Constants.SERVER);
-		final String uploadURI = serverAddress+ConfigReader.getProperty(Constants.UPLOAD_PATH);
+		final String uploadUri = serverAddress+ConfigReader.getProperty(Constants.UPLOAD_PATH);
 		final String authURI = serverAddress+ConfigReader.getProperty(Constants.LOGIN_PATH);
 		final String username = context.getParameter(Constants.USERNAME);
 		final String password = context.getParameter(Constants.PASSWORD);
 		final String inputUri = context.getParameter(Constants.INPUT_PATH);		
 		final String siteID = context.getParameter(Constants.SITE_ID);
 		final String uploadDir = context.getParameter(Constants.UPLOAD_DIR);
+		
+		final HttpUtils httpUtils = new HttpUtils();
 
 		String authTicket = Constants.EMPTY;
 		try {
-			authTicket = HttpUtils.getAuthTicket(authURI, username, password);
-		} catch (IOException e) {
-			e.printStackTrace();
+			authTicket = httpUtils.getAuthTicket(authURI, username, password);
+		} catch (IOException ioex) {
+			LOG.error("IOException occured while getting the auth ticket: ", ioex);
 		}
 
 		final SampleResult result = new SampleResult();
 		try {
-			System.out.println("[UploadDocumentTestHttp:] Starting load test..");
+			LOG.info("Starting load test..");
 			
 			final File fileObject = new File (inputUri);
 			result.sampleStart(); // start stop-watch
@@ -105,22 +104,22 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 			if(fileObject.isDirectory()){
 				final Set<File> setOfFiles = Collections.unmodifiableSet(
 						DirectoryTraverser.getFileUris(fileObject));
-				for (Iterator<File> iterator = setOfFiles.iterator(); iterator.hasNext();) {
+				for (final Iterator<File> iterator = setOfFiles.iterator(); iterator.hasNext();) {
 					final File fileObj = iterator.next();
 					//call document upload
-					responseBody.append(HttpUtils.documentUpload(
-							fileObj, authTicket, uploadURI, siteID,
+					responseBody.append(httpUtils.documentUpload(
+							fileObj, authTicket, uploadUri, siteID,
 							uploadDir));
 					responseBody.append(Constants.BR);
 			     }
 			}else{
-				responseBody.append(HttpUtils.documentUpload(
-						fileObject, authTicket, uploadURI, siteID,
+				responseBody.append(httpUtils.documentUpload(
+						fileObject, authTicket, uploadUri, siteID,
 						uploadDir));
 			}
 			result.sampleEnd();// end the stop-watch
 		
-			System.out.println("[UploadDocumentTestHttp:] Ending load test..");
+			LOG.info("Ending load test..");
 
 			result.setResponseMessage(responseBody.toString());
 			result.setSuccessful(true);
@@ -130,13 +129,14 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 		} catch (Exception excp) {
 			result.sampleEnd(); // stop stop-watch
 			result.setSuccessful(false);
-			result.setResponseMessage("[UploadDocumentTestHttp:] Exception: " + excp);
+			result.setResponseMessage("Exception occured while running test: " + excp);
 			// get stack trace as a String to return as document data
 			final StringWriter stringWriter = new StringWriter();
 			excp.printStackTrace(new PrintWriter(stringWriter));
 			result.setResponseData(stringWriter.toString(),Constants.ENCODING);
 			result.setDataType(org.apache.jmeter.samplers.SampleResult.TEXT);
 			result.setResponseCode(Constants.SERVER_ERR);
+			LOG.error("Exception occured while running test: ", excp);
 		} 
 		return result;
 	}

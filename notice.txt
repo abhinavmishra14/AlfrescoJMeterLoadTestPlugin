@@ -4,4 +4,6 @@ Below is the list of licenses and modules used under corresponding licenses,
 commons-*   http://commons.apache.org/
 http*   http://commons.apache.org/
 Apache*   http://commons.apache.org/
+log*   http://commons.apache.org/
+
 

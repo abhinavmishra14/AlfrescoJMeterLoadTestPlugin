@@ -20,10 +20,10 @@ package com.jmeter.alfresco.utils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * This class DirectoryTraverser.<br/>
@@ -34,29 +34,31 @@ import java.util.TreeSet;
  */
 public final class DirectoryTraverser {
 
+	
 	/**
-	 * Gets the file URIs. Recursively traverse each directory and uris of files.
+	 * Gets the file uris.
 	 *
-	 * @param aStartingDir the a starting dir
-	 * @return the file listing
+	 * @param startDir the start dir
+	 * @return the file uris
 	 * @throws FileNotFoundException the file not found exception
 	 */
-	public static Set<File> getFileUris(final File aStartingDir)
+	public static Set<File> getFileUris(final File startDir)
 			throws FileNotFoundException {
-		checkDirectories(aStartingDir); // throw exception if not valid.
-		return getUrisRecursive(aStartingDir);
+		checkDirectories(startDir); // throw exception if not valid.
+		return getUrisRecursive(startDir);
 	}
 
 	/**
-	 * Gets the file uris recursively.
+	 * Gets the uris recursive.<br/>
+	 * Recursively traverse each directory and uris of files.
 	 *
 	 * @param aStartingDir the a starting dir
-	 * @return the file listing no sort
+	 * @return the uris recursive
 	 * @throws FileNotFoundException the file not found exception
 	 */
 	private static Set<File> getUrisRecursive(final File aStartingDir)
 			throws FileNotFoundException {
-		final Set<File> sortedSetOfFiles = new TreeSet<File>();
+		final Set<File> sortedSetOfFiles = new HashSet<File>();
 		final File[] filesAndDirs = aStartingDir.listFiles();
 		final List<File> filesDirs = Arrays.asList(filesAndDirs);
 		final Iterator<File> filesDirsItr = filesDirs.iterator();

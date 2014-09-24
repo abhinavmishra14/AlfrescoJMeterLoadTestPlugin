@@ -20,7 +20,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
@@ -28,9 +33,15 @@ import org.apache.commons.net.ftp.FTPClient;
  * The Class FtpUtils.<br/>
  * This class is a utility class, will be used to upload a file or directory to
  * remote host via FTP.
+ * 
+ * @author Abhinav Kumar Mishra
+ * @since 2014
  */
 public final class FtpUtils {
-
+	
+	/** The Constant logger. */
+	private static final Log LOG = LogFactory.getLog(FtpUtils.class);
+	
 	/** The Constant EMPTY. */
 	private static final String EMPTY = "";
 	
@@ -62,10 +73,10 @@ public final class FtpUtils {
 			ftpClient.login(userName, password);
 			//Use local passive mode to pass fire-wall
 			ftpClient.enterLocalPassiveMode();
-			System.out.println("Successfully connected to remote host!\n");
+			LOG.info("Successfully connected to remote host!\n");
 			final File localDirOrFileObj = new File(fromLocalDirOrFile);
 			if (localDirOrFileObj.isFile()) {
-				System.out.println("Uploading file: "+ fromLocalDirOrFile);
+				LOG.info("Uploading file: "+ fromLocalDirOrFile);
 				
 				uploadFile(ftpClient, fromLocalDirOrFile, toRemoteDirOrFile
 						+ FILE_SEPERATOR_LINUX + localDirOrFileObj.getName());				
@@ -77,9 +88,9 @@ public final class FtpUtils {
 			ftpClient.logout();
 			ftpClient.disconnect();
 			responseMessage = "Upload completed successfully!";
-			System.out.println(responseMessage);
+			LOG.info(responseMessage);
 			
-			System.out.println("\nSuccessfully disconnected to remote host!");
+			LOG.info("Successfully disconnected to remote host!");
 		} catch (IOException ioexcp) {
 			responseMessage = ioexcp.getMessage();
 			ioexcp.printStackTrace();
@@ -104,12 +115,11 @@ public final class FtpUtils {
 		fromLocalParentDir = convertToLinuxFormat(fromLocalParentDir);
 		fromLocalParentDir = checkLinuxSeperator(fromLocalParentDir);
 		
-		System.out.println("Listing the directory tree: " + fromLocalParentDir);
+		LOG.info("Listing the directory tree: " + fromLocalParentDir);
 
 		final File localDir = new File(fromLocalParentDir);
-		final File[] subFiles = localDir.listFiles();
-		
-		if (subFiles != null && subFiles.length > 0) {
+		final List<File> subFiles = Collections.unmodifiableList(Arrays.asList(localDir.listFiles()));
+		if (subFiles != null && !subFiles.isEmpty()) {
 			for (final File item : subFiles) {
 				
 				String remoteFilePath = toRemoteDir + FILE_SEPERATOR_LINUX + remoteParentDir
@@ -121,25 +131,22 @@ public final class FtpUtils {
 				if (item.isFile()) {
 					// Upload the file
 					final String localFilePath = convertToLinuxFormat(item.getAbsolutePath());
-					System.out.println("Uploading file: "+ localFilePath);
+					LOG.info("Uploading file: "+ localFilePath);
 					final boolean isFileUploaded = uploadFile(ftpClient,
 							localFilePath, remoteFilePath);
 					if (isFileUploaded) {
-						System.out.println("File uploaded: '"
-								+ remoteFilePath+"'");
+						LOG.info("File uploaded: '"+ remoteFilePath+"'");
 					} else {
-						System.err.println("Could not upload the file: '"
-								+ localFilePath+"'");
+						LOG.error("Could not upload the file: '"+ localFilePath+"'");
 					}
 				} else {
 					//Recursively traverse the directory and create the directory.
 					// Create directory on the server
 					final boolean isDirCreated = ftpClient.makeDirectory(remoteFilePath);
 					if (isDirCreated) {
-						System.out.println("Created the directory: '"
-								+ remoteFilePath+"' on remote host");
+						LOG.info("Created the directory: '"+ remoteFilePath+"' on remote host");
 					} else {
-						System.err.println("Could not create the directory: '"
+						LOG.error("Could not create the directory: '"
 								+ remoteFilePath+"' on remote host, directory may be existing!");
 					}
 
