@@ -83,17 +83,27 @@ public final class FtpUtils {
 			} else {
 				uploadDirectory(ftpClient, toRemoteDirOrFile, fromLocalDirOrFile,EMPTY);
 			}
-
+			
 			//Log out and disconnect from the server once FTP operation is completed.
-			ftpClient.logout();
-			ftpClient.disconnect();
+			if (ftpClient.isConnected()) {
+				try {
+					ftpClient.logout();
+				} catch (IOException ignored) {
+					LOG.error("Ignoring the exception while logging out from remote host: ", ignored);
+				}
+				try {
+					ftpClient.disconnect();
+				} catch (IOException ignored) {
+					LOG.error("Ignoring the exception while disconnecting from remote host: ", ignored);
+				}
+			}
 			responseMessage = "Upload completed successfully!";
 			LOG.info(responseMessage);
 			
 			LOG.info("Successfully disconnected to remote host!");
 		} catch (IOException ioexcp) {
 			responseMessage = ioexcp.getMessage();
-			ioexcp.printStackTrace();
+			LOG.error("IOException occured: ", ioexcp);
 		}
 		
 		return responseMessage;

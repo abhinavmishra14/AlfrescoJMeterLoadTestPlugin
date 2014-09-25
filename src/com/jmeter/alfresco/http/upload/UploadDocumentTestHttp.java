@@ -97,7 +97,7 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 			LOG.info("Starting load test..");
 			
 			final File fileObject = new File (inputUri);
-			result.sampleStart(); // start stop-watch
+			result.sampleStart(); // Record the start time of a sample
 			final StringBuffer responseBody= new StringBuffer();
 
 			//if uri is a directory the upload all files..
@@ -119,7 +119,7 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 						fileObject, authTicket, uploadUri, siteID,
 						uploadDir));
 			}
-			result.sampleEnd();// end the stop-watch
+			result.sampleEnd();// Record the end time of a sample and calculate the elapsed time
 		
 			LOG.info("Ending load test..");
 
@@ -129,7 +129,7 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 			result.setContentType(Constants.MIME_TYPE);
 			
 		} catch (Exception excp) {
-			result.sampleEnd(); // stop stop-watch
+			result.sampleEnd(); // Record the end time of a sample and calculate the elapsed time
 			result.setSuccessful(false);
 			result.setResponseMessage("Exception occured while running test: " + excp);
 			// get stack trace as a String to return as document data

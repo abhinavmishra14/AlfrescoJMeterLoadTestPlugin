@@ -80,13 +80,14 @@ public class UploadDocumentTestFtp extends AbstractJavaSamplerClient {
 		try {
 			
 			LOG.info("Starting load test..");
-			result.sampleStart(); // start stop-watch
-
+			result.sampleStart(); // Record the start time of a sample
 			final FtpUtils fileUtils = new FtpUtils();
+			
+			result.latencyEnd(); //Set the time to the first response 
 			final String responseMessage = fileUtils.uploadDirectoryOrFile(host, port, userName, password,
 					localDirOrFile, remoteDirOrFile);
 			
-			result.sampleEnd();// end the stop-watch
+			result.sampleEnd();// Record the end time of a sample and calculate the elapsed time
 			LOG.info("Ending load test..");
 			
 			result.setResponseMessage("OK,"+responseMessage+" See the log for details.");
@@ -94,7 +95,7 @@ public class UploadDocumentTestFtp extends AbstractJavaSamplerClient {
 			result.setResponseCodeOK();
 			result.setContentType(Constants.EMPTY);
 		} catch (Exception excp) {
-			result.sampleEnd(); // stop stop-watch
+			result.sampleEnd(); // Record the end time of a sample and calculate the elapsed time
 			result.setSuccessful(false);
 			result.setResponseMessage("Exception occured while running test: " + excp);
 			// Get stack trace as a String to return as document data
