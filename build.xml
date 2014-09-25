@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!-- 
+   ===================================================================================
+     * Alfresco JMeter Load Test Plugin build script
+     * Copyright &copy; 2014. Abhinav Kumar Mishra. 
+     * All rights reserved.
+     * Developed by Abhinav K Mishra
+     *   
+     * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+   ====================================================================================
+-->
+<project name="Alfresco JMeter Load Test Plugin Build Project" default="echo-properties" basedir=".">
+	
+	<!-- JMeter Home (Change the value as per your installation directory) -->
+    <property name="jmeter.home" value="D:\ProjectSofts\JMETER\apache-jmeter-2.11"/>   
+	
+    <property name="jmeter.plugin-lib" value="${jmeter.home}/lib/ext"/>
+    <property name="ref.lib" value="${basedir}/lib"/>
+    <property name="jar.file" value="${basedir}/jar/AlfrescoJMeterLoadTestPlugin.jar"/>
+    <property name="build.dir" value="${basedir}/build"/>
+    <property name="version" value="1.0"/>
+
+	<path id="class.path">
+	    <fileset dir="${ref.lib}" includes="**/*.jar"/>
+	</path>
+	
+	<target name="echo-properties">
+		<echo>JMETER_HOME: ${jmeter.home}</echo>
+		<echo>JMETER_PLUGIN_INSTALLATION_DIR: ${jmeter.plugin-lib}</echo>
+	</target>
+		
+	<target name="-init">
+	    <delete file="${jar.file}"/>
+    	<delete dir="${build.dir}"/>
+    	<mkdir dir="${build.dir}"/>
+    	<mkdir dir="${build.dir}/classes"/>
+    </target>
+ 
+    <target name="-compile" depends="-init">
+       <javac debug="true" classpathref="class.path" srcdir="${basedir}/src" 
+       		destdir="${build.dir}/classes" includeantruntime="true"/>
+    	<copy todir="${build.dir}/classes" overwrite="true">
+            <fileset file="${basedir}/src/*.properties"/>
+    	</copy>
+    </target>
+                       
+    <target name="-build-jar" depends="-compile" description="Package the jar file." >
+        <jar destfile="${jar.file}">
+          <manifest>
+    	      <attribute name="Built-By" value="${user.name}"/>
+    	      <attribute name="Title" value="AlfrescoJMeterLoadTestPlugin"/>
+    	      <attribute name="Version" value="${version}"/>
+           </manifest>
+           <fileset dir="${build.dir}/classes" includes="**/*.class, **/*.properties" />
+        </jar>
+    </target>
+               
+    <target name="deploy-plugin" depends="-build-jar" description="Deploy the jar to jmeter" >
+         <copy todir="${jmeter.plugin-lib}" overwrite="true">
+            <fileset file="${jar.file}"/>
+         	<fileset dir="${ref.lib}" excludes="ApacheJMeter_java.jar ApacheJMeter_core.jar"/>
+         </copy>
+    </target>
+</project>
