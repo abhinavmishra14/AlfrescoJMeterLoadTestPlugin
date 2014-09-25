@@ -93,6 +93,7 @@ public final class FtpUtils {
 				}
 				try {
 					ftpClient.disconnect();
+					LOG.info("Successfully disconnected from remote host!\n");
 				} catch (IOException ignored) {
 					LOG.error("Ignoring the exception while disconnecting from remote host: ", ignored);
 				}
@@ -100,7 +101,6 @@ public final class FtpUtils {
 			responseMessage = "Upload completed successfully!";
 			LOG.info(responseMessage);
 			
-			LOG.info("Successfully disconnected to remote host!");
 		} catch (IOException ioexcp) {
 			responseMessage = ioexcp.getMessage();
 			LOG.error("IOException occured: ", ioexcp);
