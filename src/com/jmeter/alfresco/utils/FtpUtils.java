@@ -128,10 +128,10 @@ public final class FtpUtils {
 		LOG.info("Listing the directory tree: " + fromLocalParentDir);
 
 		final File localDir = new File(fromLocalParentDir);
-		final File [] liestedFiles = localDir.listFiles();
+		final File [] listedFiles = localDir.listFiles();
 		List<File> subFiles = null;
-		if(liestedFiles!=null){
-			subFiles= Collections.unmodifiableList(Arrays.asList(liestedFiles));
+		if(listedFiles!=null){
+			subFiles= Collections.unmodifiableList(Arrays.asList(listedFiles));
 		}
 		if (subFiles != null && !subFiles.isEmpty()) {
 			for (final File item : subFiles) {
