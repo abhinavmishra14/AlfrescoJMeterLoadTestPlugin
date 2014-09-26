@@ -128,7 +128,11 @@ public final class FtpUtils {
 		LOG.info("Listing the directory tree: " + fromLocalParentDir);
 
 		final File localDir = new File(fromLocalParentDir);
-		final List<File> subFiles = Collections.unmodifiableList(Arrays.asList(localDir.listFiles()));
+		final File [] liestedFiles = localDir.listFiles();
+		List<File> subFiles = null;
+		if(liestedFiles!=null){
+			subFiles= Collections.unmodifiableList(Arrays.asList(liestedFiles));
+		}
 		if (subFiles != null && !subFiles.isEmpty()) {
 			for (final File item : subFiles) {
 				
@@ -142,8 +146,7 @@ public final class FtpUtils {
 					// Upload the file
 					final String localFilePath = convertToLinuxFormat(item.getAbsolutePath());
 					LOG.info("Uploading file: "+ localFilePath);
-					final boolean isFileUploaded = uploadFile(ftpClient,
-							localFilePath, remoteFilePath);
+					final boolean isFileUploaded = uploadFile(ftpClient,localFilePath, remoteFilePath);
 					if (isFileUploaded) {
 						LOG.info("File uploaded: '"+ remoteFilePath+"'");
 					} else {
@@ -168,8 +171,7 @@ public final class FtpUtils {
 
 					fromLocalParentDir = item.getAbsolutePath();
 					//Call to uploadDirectory to upload the sub-directories
-					uploadDirectory(ftpClient, toRemoteDir, fromLocalParentDir,
-							parentDirectory);
+					uploadDirectory(ftpClient, toRemoteDir, fromLocalParentDir,parentDirectory);
 				}
 			}
 		}
