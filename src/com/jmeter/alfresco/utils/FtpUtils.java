@@ -45,7 +45,7 @@ public final class FtpUtils {
 	/** The Constant EMPTY. */
 	private static final String EMPTY = "";
 	
-	/** The Constant BACK_SLASH. */
+	/** The Constant FILE_SEPERATOR_LINUX. */
 	private static final String FILE_SEPERATOR_LINUX = "/";
 	
 	/** The Constant FILE_SEPERATOR_WIN. */
