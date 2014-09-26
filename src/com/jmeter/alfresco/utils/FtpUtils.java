@@ -156,7 +156,7 @@ public final class FtpUtils {
 					if (isDirCreated) {
 						LOG.info("Created the directory: '"+ remoteFilePath+"' on remote host");
 					} else {
-						LOG.error("Could not create the directory: '"
+						LOG.warn("Could not create the directory: '"
 								+ remoteFilePath+"' on remote host, directory may be existing!");
 					}
 
