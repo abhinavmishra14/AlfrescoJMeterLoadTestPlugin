@@ -21,7 +21,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -60,10 +59,13 @@ public final class FtpUtils {
 	 * @param password the password
 	 * @param fromLocalDirOrFile the local dir
 	 * @param toRemoteDirOrFile the remote dir
+	 * @return the string
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public String uploadDirectoryOrFile(final String host, final int port,
 			final String userName, final String password,
-			final String fromLocalDirOrFile, final String toRemoteDirOrFile) {
+			final String fromLocalDirOrFile, final String toRemoteDirOrFile)
+			throws IOException {
 		
 		final FTPClient ftpClient = new FTPClient();
 		String responseMessage = Constants.EMPTY;
@@ -88,6 +90,7 @@ public final class FtpUtils {
 			if (ftpClient.isConnected()) {
 				try {
 					ftpClient.logout();
+					LOG.info("Successfully signed-out from remote host!");
 				} catch (IOException ignored) {
 					LOG.error("Ignoring the exception while logging out from remote host: ", ignored);
 				}
@@ -102,8 +105,8 @@ public final class FtpUtils {
 			LOG.info(responseMessage);
 			
 		} catch (IOException ioexcp) {
-			responseMessage = ioexcp.getMessage();
 			LOG.error("IOException occured: ", ioexcp);
+		    throw ioexcp;
 		}
 		
 		return responseMessage;
@@ -121,27 +124,22 @@ public final class FtpUtils {
 	private void uploadDirectory(final FTPClient ftpClient,
 			final String toRemoteDir, String fromLocalParentDir,
 			final String remoteParentDir) throws IOException {
-
 		fromLocalParentDir = convertToLinuxFormat(fromLocalParentDir);
 		fromLocalParentDir = checkLinuxSeperator(fromLocalParentDir);
-		
 		LOG.info("Listing the directory tree: " + fromLocalParentDir);
-
 		final File localDir = new File(fromLocalParentDir);
 		final File [] listedFiles = localDir.listFiles();
 		List<File> subFiles = null;
 		if(listedFiles!=null){
-			subFiles= Collections.unmodifiableList(Arrays.asList(listedFiles));
+			subFiles=Arrays.asList(listedFiles);
 		}
 		if (subFiles != null && !subFiles.isEmpty()) {
 			for (final File item : subFiles) {
-				
 				String remoteFilePath = toRemoteDir + FILE_SEPERATOR_LINUX + remoteParentDir
 						+ FILE_SEPERATOR_LINUX + item.getName();
 				if (EMPTY.equals(remoteParentDir)) {
 					remoteFilePath = toRemoteDir + FILE_SEPERATOR_LINUX + item.getName();
 				}
-
 				if (item.isFile()) {
 					// Upload the file
 					final String localFilePath = convertToLinuxFormat(item.getAbsolutePath());
@@ -162,13 +160,11 @@ public final class FtpUtils {
 						LOG.warn("Could not create the directory: '"
 								+ remoteFilePath+"' on remote host, directory may be existing!");
 					}
-
 					//Directory created, now upload the sub directory
 					String parentDirectory = remoteParentDir + FILE_SEPERATOR_LINUX + item.getName();
 					if (EMPTY.equals(remoteParentDir)) {
 						parentDirectory = item.getName();
 					}
-
 					fromLocalParentDir = item.getAbsolutePath();
 					//Call to uploadDirectory to upload the sub-directories
 					uploadDirectory(ftpClient, toRemoteDir, fromLocalParentDir,parentDirectory);

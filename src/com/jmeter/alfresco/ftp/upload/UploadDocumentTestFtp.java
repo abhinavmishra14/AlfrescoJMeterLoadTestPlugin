@@ -96,6 +96,7 @@ public class UploadDocumentTestFtp extends AbstractJavaSamplerClient {
 			result.setContentType(Constants.EMPTY);
 		} catch (Exception excp) {
 			result.sampleEnd(); // Record the end time of a sample and calculate the elapsed time
+			LOG.info("Ending load test..");
 			result.setSuccessful(false);
 			result.setResponseMessage("Exception occured while running test: " + excp);
 			// Get stack trace as a String to return as document data
