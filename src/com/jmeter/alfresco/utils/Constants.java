@@ -118,4 +118,7 @@ public final class Constants {
 	/** The Constant REMOTE_FILE_OR_DIR. */
 	public static final String REMOTE_FILE_OR_DIR = "remoteDirectoryPath";
 
+	private Constants() {
+		super();
+	}
 }
