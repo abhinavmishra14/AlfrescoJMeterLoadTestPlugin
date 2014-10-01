@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPReply;
 
 /**
  * The Class FtpUtils.<br/>
@@ -69,46 +70,56 @@ public final class FtpUtils {
 		
 		final FTPClient ftpClient = new FTPClient();
 		String responseMessage = Constants.EMPTY;
+		
 		try {
 			// Connect and login to get the session
 			ftpClient.connect(host, port);
-			ftpClient.login(userName, password);
-			//Use local passive mode to pass fire-wall
-			ftpClient.enterLocalPassiveMode();
-			LOG.info("Successfully connected to remote host!\n");
-			final File localDirOrFileObj = new File(fromLocalDirOrFile);
-			if (localDirOrFileObj.isFile()) {
-				LOG.info("Uploading file: "+ fromLocalDirOrFile);
-				
-				uploadFile(ftpClient, fromLocalDirOrFile, toRemoteDirOrFile
-						+ FILE_SEPERATOR_LINUX + localDirOrFileObj.getName());				
-			} else {
-				uploadDirectory(ftpClient, toRemoteDirOrFile, fromLocalDirOrFile,EMPTY);
-			}
+			final int replyCode = ftpClient.getReplyCode();
 			
-			//Log out and disconnect from the server once FTP operation is completed.
-			if (ftpClient.isConnected()) {
-				try {
-					ftpClient.logout();
-					LOG.info("Successfully signed-out from remote host!");
-				} catch (IOException ignored) {
-					LOG.error("Ignoring the exception while logging out from remote host: ", ignored);
-				}
-				try {
-					ftpClient.disconnect();
-					LOG.info("Successfully disconnected from remote host!\n");
-				} catch (IOException ignored) {
-					LOG.error("Ignoring the exception while disconnecting from remote host: ", ignored);
-				}
-			}
-			responseMessage = "Upload completed successfully!";
-			LOG.info(responseMessage);
+            if (FTPReply.isPositiveCompletion(replyCode)) {
+            	final boolean loginSuccess = ftpClient.login(userName, password);
+            	if(loginSuccess){
+            		//Use local passive mode to pass fire-wall
+        			ftpClient.enterLocalPassiveMode();
+        			LOG.info("Connected to remote host!\n");
+        			final File localDirOrFileObj = new File(fromLocalDirOrFile);
+        			if (localDirOrFileObj.isFile()) {
+        				LOG.info("Uploading file: "+ fromLocalDirOrFile);
+        				
+        				uploadFile(ftpClient, fromLocalDirOrFile, toRemoteDirOrFile
+        						+ FILE_SEPERATOR_LINUX + localDirOrFileObj.getName());				
+        			} else {
+        				uploadDirectory(ftpClient, toRemoteDirOrFile, fromLocalDirOrFile,EMPTY);
+        			}
+        			
+        			responseMessage = "Upload completed successfully!";
+            	}else{
+            		responseMessage = "Could not login to the remote host!";
+            	}
+    			    			
+    			//Log out and disconnect from the server once FTP operation is completed.
+    			if (ftpClient.isConnected()) {
+    				try {
+    					ftpClient.logout();
+    				} catch (IOException ignored) {
+    					LOG.error("Ignoring the exception while logging out from remote host: ", ignored);
+    				}
+    				try {
+    					ftpClient.disconnect();
+    					LOG.info("Disconnected from remote host!");
+    				} catch (IOException ignored) {
+    					LOG.error("Ignoring the exception while disconnecting from remote host: ", ignored);
+    				}
+    			}
+            } else{
+            	responseMessage = "Host connection failed!";
+            }		
+			LOG.info("ResponseMessage:=> "+responseMessage);
 			
 		} catch (IOException ioexcp) {
-			LOG.error("IOException occured: ", ioexcp);
+			LOG.error("IOException occured in uploadDirectoryOrFile(..): ", ioexcp);
 		    throw ioexcp;
 		}
-		
 		return responseMessage;
 	}
 	
