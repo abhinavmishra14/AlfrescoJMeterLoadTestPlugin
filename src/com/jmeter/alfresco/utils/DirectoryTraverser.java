@@ -96,4 +96,8 @@ public final class DirectoryTraverser {
 					+ directoryUri);
 		}
 	}
+
+	private DirectoryTraverser() {
+		super();
+	}	
 }
