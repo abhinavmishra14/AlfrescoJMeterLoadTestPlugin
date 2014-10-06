@@ -65,10 +65,13 @@
         </jar>
     </target>
                
-    <target name="deploy-plugin" depends="-build-jar" description="Deploy the jar to jmeter" >
+    <target name="deploy-plugin" depends="-build-jar" description="Deploy the jar to jmeter">
          <copy todir="${jmeter.plugin-lib}" overwrite="true">
             <fileset file="${jar.file}"/>
          	<fileset dir="${ref.lib}" excludes="ApacheJMeter_java.jar ApacheJMeter_core.jar"/>
          </copy>
+    	 <copy todir="${jmeter.home}/bin">
+    	 	<fileset file="${build.dir}/classes/config.properties"/>
+    	 </copy>
     </target>
 </project>

@@ -25,6 +25,9 @@ package com.jmeter.alfresco.utils;
  */
 public final class Constants {
 
+	/** The Constant JMETER_HOME. */
+	public static final String JMETER_HOME = "JMETER_HOME";
+
 	/** The Constant EMPTY. */
 	public static final String EMPTY = "";
 	

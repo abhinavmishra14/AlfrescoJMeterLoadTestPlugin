@@ -17,6 +17,8 @@
  */
 package com.jmeter.alfresco.utils;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -34,14 +36,24 @@ public final class ConfigReader {
 	/** The Constant KEYS. */
 	private final static Properties KEYS = new Properties();
 
-    static{
-    	try (InputStream inStream = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream(Constants.CONFIG)) {
-			KEYS.load(inStream);
-		} catch (IOException ioex) {
-			ioex.printStackTrace();
+	static {
+		final File configFile = new File(System.getenv(Constants.JMETER_HOME)
+				+ File.separator + "bin" + File.separator + Constants.CONFIG);
+		try (final InputStream inStream = new FileInputStream(configFile)) {
+			if (inStream != null) {
+				KEYS.load(inStream);
+			}
+		} catch (IOException ioexcp) {
+			try (InputStream inStream = Thread.currentThread()
+					.getContextClassLoader().getResourceAsStream(Constants.CONFIG)) {
+				if (inStream != null) {
+				  KEYS.load(inStream);
+				} 
+			} catch (IOException ioex) {
+				ioex.printStackTrace();
+			}
 		}
-    }
+	}
     
 	/**
 	 * Instantiates a new property reader.
