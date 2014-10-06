@@ -47,8 +47,8 @@ public class UploadDocumentFtpTest extends TestCase{
 		final String remoteDir = "Alfresco/Sites/testpoc/documentLibrary/testUpload";
 		final String localDir = "D:\\Data\\trunk";
 		
-		final FtpUtils fileUtils = new FtpUtils();
-		final String uploadResp= fileUtils.uploadDirectoryOrFile(host, port, userName, password,
+		final FtpUtils ftpUtils = new FtpUtils();
+		final String uploadResp= ftpUtils.uploadDirectoryOrFile(host, port, userName, password,
 				localDir, remoteDir);
 		assertEquals("Upload completed successfully!", uploadResp);
 	}
