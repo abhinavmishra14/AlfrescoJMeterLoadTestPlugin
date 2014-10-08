@@ -2,8 +2,8 @@ Below is the list of licenses and modules used under corresponding licenses,
 
 ===Apache 2.0 - License====
 commons-*   http://commons.apache.org/
-http*   http://commons.apache.org/
-Apache*   http://commons.apache.org/
-log*   http://commons.apache.org/
+http*       http://www.apache.org/
+Apache*     http://jmeter.apache.org/
+log*        http://www.apache.org/
 
 
