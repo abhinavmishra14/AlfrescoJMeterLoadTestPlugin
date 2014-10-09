@@ -70,7 +70,8 @@ public final class FtpUtils {
 		
 		final FTPClient ftpClient = new FTPClient();
 		String responseMessage = Constants.EMPTY;
-		
+		final Timer timer = new Timer();
+
 		try {
 			// Connect and login to get the session
 			ftpClient.connect(host, port);
@@ -79,9 +80,13 @@ public final class FtpUtils {
             if (FTPReply.isPositiveCompletion(replyCode)) {
             	final boolean loginSuccess = ftpClient.login(userName, password);
             	if(loginSuccess){
+        			LOG.info("Connected to remote host!");
+            		//starting the timer
+            		timer.start();
+            		LOG.info("Timer started for upload: "+timer.getStartTime()+" ms");
+      
             		//Use local passive mode to pass fire-wall
         			ftpClient.enterLocalPassiveMode();
-        			LOG.info("Connected to remote host!\n");
         			final File localDirOrFileObj = new File(fromLocalDirOrFile);
         			if (localDirOrFileObj.isFile()) {
         				LOG.info("Uploading file: "+ fromLocalDirOrFile);
@@ -92,6 +97,10 @@ public final class FtpUtils {
         				uploadDirectory(ftpClient, toRemoteDirOrFile, fromLocalDirOrFile,EMPTY);
         			}
         			
+            		//ending the timer
+        			timer.end();
+            		LOG.info("Total time spent during upload: "+timer.getTotalTime()+" ms");
+
         			responseMessage = "Upload completed successfully!";
             	}else{
             		responseMessage = "Could not login to the remote host!";
