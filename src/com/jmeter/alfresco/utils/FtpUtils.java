@@ -126,7 +126,10 @@ public final class FtpUtils {
 			LOG.info("ResponseMessage:=> "+responseMessage);
 			
 		} catch (IOException ioexcp) {
+			//ending the timer
+			timer.end();
 			LOG.error("IOException occured in uploadDirectoryOrFile(..): ", ioexcp);
+    		LOG.info("Total time spent during upload before exception: "+timer.getTotalTime()+" ms");
 		    throw ioexcp;
 		}
 		return responseMessage;
