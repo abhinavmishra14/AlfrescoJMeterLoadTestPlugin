@@ -30,6 +30,7 @@ import org.apache.jmeter.samplers.SampleResult;
 import com.jmeter.alfresco.utils.ConfigReader;
 import com.jmeter.alfresco.utils.Constants;
 import com.jmeter.alfresco.utils.FtpUtils;
+import com.jmeter.alfresco.utils.TaskTimer;
 
 /**
  * The Class UploadDocumentTestFtp.
@@ -77,25 +78,37 @@ public class UploadDocumentTestFtp extends AbstractJavaSamplerClient {
 		final String remoteDirOrFile = context.getParameter(Constants.REMOTE_FILE_OR_DIR);
 		
 		final SampleResult result = new SampleResult();
+		final TaskTimer taskTimer = new TaskTimer();
 		try {
 			
 			LOG.info("Starting load test..");
 			result.sampleStart(); // Record the start time of a sample
 			final FtpUtils fileUtils = new FtpUtils();
-			
 			result.latencyEnd(); //Set the time to the first response 
+			
+			//starting the task timer
+    		taskTimer.startTimer();
+    		LOG.info("Timer started for upload: "+taskTimer.getStartTime()+" ms.");
+    		
 			final String responseMessage = fileUtils.uploadDirectoryOrFile(host, port, userName, password,
 					localDirOrFile, remoteDirOrFile);
 			
+			//ending the task timer
+			taskTimer.endTimer();
+    		LOG.info("Total time spent during upload: "+taskTimer.getTotalTime()+" ms.");
+    		
 			result.sampleEnd();// Record the end time of a sample and calculate the elapsed time
 			LOG.info("Ending load test..");
-			
 			result.setResponseMessage("OK,"+responseMessage+" See the log for details.");
 			result.setSuccessful(true);
 			result.setResponseCodeOK();
 			result.setContentType(Constants.EMPTY);
 		} catch (Exception excp) {
-			result.sampleEnd(); // Record the end time of a sample and calculate the elapsed time
+			//ending the task timer
+			taskTimer.endTimer();
+    		LOG.info("Total time spent during upload when exception occured: "+taskTimer.getTotalTime()+" ms.");
+			
+    		result.sampleEnd(); // Record the end time of a sample and calculate the elapsed time
 			LOG.info("Ending load test..");
 			result.setSuccessful(false);
 			result.setResponseMessage("Exception occured while running test: " + excp);

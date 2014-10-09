@@ -31,6 +31,7 @@ import org.apache.jmeter.samplers.SampleResult;
 import com.jmeter.alfresco.utils.ConfigReader;
 import com.jmeter.alfresco.utils.Constants;
 import com.jmeter.alfresco.utils.HttpUtils;
+import com.jmeter.alfresco.utils.TaskTimer;
 
 /**
  * The Class AuthenticationTest.
@@ -71,25 +72,36 @@ public class AuthenticationTest extends AbstractJavaSamplerClient {
 		
 		
 		final SampleResult result = new SampleResult();
+		final TaskTimer taskTimer = new TaskTimer();
+
 		try {
 			LOG.info("Starting load test..");
-			
 			result.sampleStart(); // Record the start time of a sample
-			
 			final HttpUtils httpUtils = new HttpUtils();
-			final Map<String, String> responseMap = httpUtils.getAuthResponse(authURI, username, password);
 			
+			//starting the task timer
+    		taskTimer.startTimer();
+    		LOG.info("Timer started for upload: "+taskTimer.getStartTime()+" ms.");
+			
+    		final Map<String, String> responseMap = httpUtils.getAuthResponse(authURI, username, password);
+			
+    		//ending the task timer
+			taskTimer.endTimer();
+    		LOG.info("Total time spent during upload: "+taskTimer.getTotalTime()+" ms.");
+    		
 			result.sampleEnd();// Record the end time of a sample and calculate the elapsed time
-			
-			LOG.info("Ending  load test..");
-
+			LOG.info("Ending load test..");
 			result.setResponseMessage(responseMap.get(Constants.RESP_BODY));
 			result.setSuccessful(true);
 			result.setResponseCode(responseMap.get(Constants.STATUS_CODE));
 			result.setContentType(responseMap.get(Constants.CONTENT_TYPE));
-			
 		} catch (Exception excp) {
+			//ending the task timer
+			taskTimer.endTimer();
+    		LOG.info("Total time spent during upload when exception occured: "+taskTimer.getTotalTime()+" ms.");
+    		
 			result.sampleEnd(); // Record the end time of a sample and calculate the elapsed time
+			LOG.info("Ending load test..");
 			result.setSuccessful(false);
 			result.setResponseMessage("Exception occured while running test: " + excp);
 			// Get stack trace as a String to return as document data

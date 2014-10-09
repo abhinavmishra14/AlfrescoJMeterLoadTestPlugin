@@ -121,9 +121,7 @@ public final class HttpUtils {
 		PostMethod postRequest = null;
 		try {
 			final String uploadURL = getFileUploadURL(uploadURI,authTicket);
-			final TaskTimer timer = new TaskTimer();
-
-			LOG.info("documentUpload() | Upload URL: " + uploadURL);
+			LOG.debug("documentUpload() | Upload URL: " + uploadURL);
 			
 			final HttpClient httpClient = new HttpClient();
 			postRequest = new PostMethod(uploadURL);
@@ -141,21 +139,10 @@ public final class HttpUtils {
 			      };
 			
 			postRequest.setRequestEntity(new MultipartRequestEntity(parts, postRequest.getParams()));
-			
-			//starting the timer
-    		timer.start();
-    		LOG.info("Timer started for upload: "+timer.getStartTime()+" ms");
-    		
 			final int statusCode = httpClient.executeMethod(postRequest);
-			
-			//ending the timer
-			timer.end();
-    		LOG.info("Total time spent during upload: "+timer.getTotalTime()+" ms");
-
 			uploadResponse = postRequest.getResponseBodyAsString();
 			LOG.info("documentUpload() | Upload status: "+statusCode);
-			LOG.info("documentUpload() | Upload response: "+uploadResponse);
-
+			LOG.debug("documentUpload() | Upload response: "+uploadResponse);
 		} finally{
 			if(postRequest!=null){
 				//releaseConnection http connection

@@ -29,6 +29,7 @@ import org.junit.Test;
 import com.jmeter.alfresco.utils.Constants;
 import com.jmeter.alfresco.utils.DirectoryTraverser;
 import com.jmeter.alfresco.utils.HttpUtils;
+import com.jmeter.alfresco.utils.TaskTimer;
 
 /**
  * The Class UploadDocumentHttpTest.
@@ -64,6 +65,11 @@ public class UploadDocumentHttpTest extends TestCase{
 		final StringBuffer responseBody= new StringBuffer();
 
 		final File fileObject = new File (inputUri);
+		final TaskTimer taskTimer = new TaskTimer();
+		//starting the task timer
+		taskTimer.startTimer();
+		System.out.println("Timer started for upload: "+taskTimer.getStartTime()+" ms.");
+		
 		//if uri is a directory the upload all files..
 		if(fileObject.isDirectory()){
 			final Set<File> setOfFiles = DirectoryTraverser.getFileUris(fileObject);
@@ -82,6 +88,10 @@ public class UploadDocumentHttpTest extends TestCase{
 					fileObject, authTicket, uploadURI, siteID,
 					uploadDir));
 		}
+		//ending the task timer
+		taskTimer.endTimer();
+		System.out.println("Total time spent during upload: "+taskTimer.getTotalTime()+" ms.");
+				
 		assertEquals(true, responseBody.toString().contains("File uploaded successfully"));
 	}
 }

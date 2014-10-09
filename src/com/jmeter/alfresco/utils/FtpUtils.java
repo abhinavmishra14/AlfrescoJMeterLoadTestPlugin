@@ -70,8 +70,6 @@ public final class FtpUtils {
 		
 		final FTPClient ftpClient = new FTPClient();
 		String responseMessage = Constants.EMPTY;
-		final TaskTimer timer = new TaskTimer();
-
 		try {
 			// Connect and login to get the session
 			ftpClient.connect(host, port);
@@ -81,10 +79,7 @@ public final class FtpUtils {
             	final boolean loginSuccess = ftpClient.login(userName, password);
             	if(loginSuccess){
         			LOG.info("Connected to remote host!");
-            		//starting the timer
-            		timer.start();
-            		LOG.info("Timer started for upload: "+timer.getStartTime()+" ms");
-      
+            	
             		//Use local passive mode to pass fire-wall
         			ftpClient.enterLocalPassiveMode();
         			final File localDirOrFileObj = new File(fromLocalDirOrFile);
@@ -97,10 +92,6 @@ public final class FtpUtils {
         				uploadDirectory(ftpClient, toRemoteDirOrFile, fromLocalDirOrFile,EMPTY);
         			}
         			
-            		//ending the timer
-        			timer.end();
-            		LOG.info("Total time spent during upload: "+timer.getTotalTime()+" ms");
-
         			responseMessage = "Upload completed successfully!";
             	}else{
             		responseMessage = "Could not login to the remote host!";
@@ -126,10 +117,7 @@ public final class FtpUtils {
 			LOG.info("ResponseMessage:=> "+responseMessage);
 			
 		} catch (IOException ioexcp) {
-			//ending the timer
-			timer.end();
 			LOG.error("IOException occured in uploadDirectoryOrFile(..): ", ioexcp);
-    		LOG.info("Total time spent during upload before exception: "+timer.getTotalTime()+" ms");
 		    throw ioexcp;
 		}
 		return responseMessage;

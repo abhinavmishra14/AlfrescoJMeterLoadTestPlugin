@@ -24,6 +24,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 import com.jmeter.alfresco.utils.FtpUtils;
+import com.jmeter.alfresco.utils.TaskTimer;
 
 /**
  * The Class UploadDocumentHttpTest.
@@ -48,8 +49,17 @@ public class UploadDocumentFtpTest extends TestCase{
 		final String localDir = "D:\\Data\\trunk";
 		
 		final FtpUtils ftpUtils = new FtpUtils();
+		final TaskTimer taskTimer = new TaskTimer();
+		//starting the task timer
+		taskTimer.startTimer();
+		System.out.println("Timer started for upload: "+taskTimer.getStartTime()+" ms.");
+		
 		final String uploadResp= ftpUtils.uploadDirectoryOrFile(host, port, userName, password,
 				localDir, remoteDir);
+		
+		//ending the task timer
+		taskTimer.endTimer();
+		System.out.println("Total time spent during upload: "+taskTimer.getTotalTime()+" ms.");
 		assertEquals("Upload completed successfully!", uploadResp);
 	}
 }

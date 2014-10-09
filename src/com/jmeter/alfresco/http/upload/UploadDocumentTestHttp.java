@@ -36,6 +36,7 @@ import com.jmeter.alfresco.utils.ConfigReader;
 import com.jmeter.alfresco.utils.Constants;
 import com.jmeter.alfresco.utils.DirectoryTraverser;
 import com.jmeter.alfresco.utils.HttpUtils;
+import com.jmeter.alfresco.utils.TaskTimer;
 
 /**
  * The Class UploadDocumentTestHttp.
@@ -84,6 +85,7 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 		final String uploadDir = context.getParameter(Constants.UPLOAD_DIR);
 		
 		final HttpUtils httpUtils = new HttpUtils();
+		final TaskTimer taskTimer = new TaskTimer();
 
 		String authTicket = Constants.EMPTY;
 		try {
@@ -95,11 +97,14 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 		final SampleResult result = new SampleResult();
 		try {
 			LOG.info("Starting load test..");
-			
 			final File fileObject = new File (inputUri);
 			result.sampleStart(); // Record the start time of a sample
 			final StringBuffer responseBody= new StringBuffer();
-
+			
+			//starting the task timer
+    		taskTimer.startTimer();
+    		LOG.info("Timer started for upload: "+taskTimer.getStartTime()+" ms.");
+    		
 			//if uri is a directory the upload all files..
 			if(fileObject.isDirectory()){
 				final Set<File> setOfUris = Collections.unmodifiableSet(
@@ -119,17 +124,23 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 						fileObject, authTicket, uploadUri, siteID,
 						uploadDir));
 			}
+			
+			//ending the task timer
+			taskTimer.endTimer();
+    		LOG.info("Total time spent during upload: "+taskTimer.getTotalTime()+" ms.");
+    		
 			result.sampleEnd();// Record the end time of a sample and calculate the elapsed time
-		
 			LOG.info("Ending load test..");
-
 			result.setResponseMessage(responseBody.toString());
 			result.setSuccessful(true);
 			result.setResponseCodeOK();
 			result.setContentType(Constants.MIME_TYPE);
-			
 		} catch (Exception excp) {
-			result.sampleEnd(); // Record the end time of a sample and calculate the elapsed time
+			//ending the task timer
+			taskTimer.endTimer();
+    		LOG.info("Total time spent during upload when exception occured: "+taskTimer.getTotalTime()+" ms.");
+
+    		result.sampleEnd(); // Record the end time of a sample and calculate the elapsed time
 			result.setSuccessful(false);
 			result.setResponseMessage("Exception occured while running test: " + excp);
 			// get stack trace as a String to return as document data

@@ -22,9 +22,9 @@ package com.jmeter.alfresco.utils;
  * This class will be used to get time taken in a particular task.<br/>
  * 
  * Here is a pseudo sample for timer:<br/><br/>
- *       start()<br/>
+ *       startTimer()<br/>
  *       //perform the task<br/>
- *       end()<br/>
+ *       endTimer()<br/>
  *       print(getTotalTime())<br/>
  */
 public class TaskTimer {
@@ -36,16 +36,16 @@ public class TaskTimer {
 	private long endTime = 0;
 
 	/**
-	 * Start.
+	 * Start timer.
 	 */
-	public void start() {
+	public void startTimer() {
 		this.startTime = System.currentTimeMillis();
 	}
 
 	/**
-	 * End.
+	 * End timer.
 	 */
-	public void end() {
+	public void endTimer() {
 		this.endTime = System.currentTimeMillis();
 	}
 
