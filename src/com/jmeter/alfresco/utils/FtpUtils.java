@@ -70,7 +70,7 @@ public final class FtpUtils {
 		
 		final FTPClient ftpClient = new FTPClient();
 		String responseMessage = Constants.EMPTY;
-		final Timer timer = new Timer();
+		final TaskTimer timer = new TaskTimer();
 
 		try {
 			// Connect and login to get the session

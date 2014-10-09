@@ -18,7 +18,7 @@
 package com.jmeter.alfresco.utils;
 
 /**
- * The Class Timer.<br/>
+ * The Class TaskTimer.<br/>
  * This class will be used to get time taken in a particular task.<br/>
  * 
  * Here is a pseudo sample for timer:<br/><br/>
@@ -27,7 +27,7 @@ package com.jmeter.alfresco.utils;
  *       end()<br/>
  *       print(getTotalTime())<br/>
  */
-public class Timer {
+public class TaskTimer {
 	
 	/** The start time. */
 	private long startTime = 0;
