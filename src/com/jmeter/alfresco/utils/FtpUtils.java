@@ -171,7 +171,7 @@ public final class FtpUtils {
 					if (isFileUploaded) {
 						LOG.info("File uploaded: '"+ remoteFilePath+"'");
 					} else {
-						LOG.error("Could not upload the file: '"+ localFilePath+"'");
+						LOG.warn("Could not upload the file: '"+ localFilePath+"'");
 					}
 				} else {
 					//Recursively traverse the directory and create the directory.
