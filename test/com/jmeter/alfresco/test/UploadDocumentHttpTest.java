@@ -82,8 +82,6 @@ public class UploadDocumentHttpTest extends TestCase{
 					fileObject, authTicket, uploadURI, siteID,
 					uploadDir));
 		}
-
-		System.out.println("Response>>>: "+responseBody);
 		assertEquals(true, responseBody.toString().contains("File uploaded successfully"));
 	}
 }
