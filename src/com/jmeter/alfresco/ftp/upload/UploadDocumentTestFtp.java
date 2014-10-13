@@ -88,7 +88,7 @@ public class UploadDocumentTestFtp extends AbstractJavaSamplerClient {
 			
 			//starting the task timer
     		taskTimer.startTimer();
-    		LOG.info("Timer started for upload for ' "+localDirOrFile+" ' ::- "+taskTimer.getStartTime()+" ms.");
+    		LOG.info("Upload timer started for ' "+localDirOrFile+" ' ::- "+taskTimer.getStartTime()+" ms.");
     		
 			final String responseMessage = fileUtils.uploadDirectoryOrFile(host, port, userName, password,
 					localDirOrFile, remoteDirOrFile);

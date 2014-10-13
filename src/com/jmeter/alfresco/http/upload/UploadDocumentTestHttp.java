@@ -103,7 +103,7 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 			
 			//starting the task timer
     		taskTimer.startTimer();
-    		LOG.info("Timer started for upload for ' "+inputUri+" ' ::- "+taskTimer.getStartTime()+" ms.");
+    		LOG.info("Upload timer started for ' "+inputUri+" ' ::- "+taskTimer.getStartTime()+" ms.");
     		
 			//if uri is a directory the upload all files..
 			if(fileObject.isDirectory()){
