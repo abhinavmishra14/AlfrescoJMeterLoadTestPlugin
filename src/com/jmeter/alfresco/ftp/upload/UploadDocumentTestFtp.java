@@ -88,14 +88,14 @@ public class UploadDocumentTestFtp extends AbstractJavaSamplerClient {
 			
 			//starting the task timer
     		taskTimer.startTimer();
-    		LOG.info("Timer started for upload: "+taskTimer.getStartTime()+" ms.");
+    		LOG.info("Timer started for upload for ' "+localDirOrFile+" ' ::- "+taskTimer.getStartTime()+" ms.");
     		
 			final String responseMessage = fileUtils.uploadDirectoryOrFile(host, port, userName, password,
 					localDirOrFile, remoteDirOrFile);
 			
 			//ending the task timer
 			taskTimer.endTimer();
-    		LOG.info("Total time spent during upload: "+taskTimer.getTotalTime()+" ms.");
+    		LOG.info("Total time spent during upload for ' "+localDirOrFile+" ' ::- "+taskTimer.getTotalTime()+" ms.");
     		
 			result.sampleEnd();// Record the end time of a sample and calculate the elapsed time
 			LOG.info("Ending load test..");
@@ -106,7 +106,7 @@ public class UploadDocumentTestFtp extends AbstractJavaSamplerClient {
 		} catch (Exception excp) {
 			//ending the task timer
 			taskTimer.endTimer();
-    		LOG.info("Total time spent during upload when exception occured: "+taskTimer.getTotalTime()+" ms.");
+			LOG.info("Total time spent during upload for ' "+ localDirOrFile+ " ' , when exception occured::- "+ taskTimer.getTotalTime()+ " ms.");
 			
     		result.sampleEnd(); // Record the end time of a sample and calculate the elapsed time
 			LOG.info("Ending load test..");

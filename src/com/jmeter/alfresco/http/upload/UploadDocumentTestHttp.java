@@ -103,7 +103,7 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 			
 			//starting the task timer
     		taskTimer.startTimer();
-    		LOG.info("Timer started for upload: "+taskTimer.getStartTime()+" ms.");
+    		LOG.info("Timer started for upload for ' "+inputUri+" ' ::- "+taskTimer.getStartTime()+" ms.");
     		
 			//if uri is a directory the upload all files..
 			if(fileObject.isDirectory()){
@@ -127,7 +127,7 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 			
 			//ending the task timer
 			taskTimer.endTimer();
-    		LOG.info("Total time spent during upload: "+taskTimer.getTotalTime()+" ms.");
+    		LOG.info("Total time spent during upload for ' "+inputUri+" ' ::- "+taskTimer.getTotalTime()+" ms.");
     		
 			result.sampleEnd();// Record the end time of a sample and calculate the elapsed time
 			LOG.info("Ending load test..");
@@ -138,7 +138,7 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 		} catch (Exception excp) {
 			//ending the task timer
 			taskTimer.endTimer();
-    		LOG.info("Total time spent during upload when exception occured: "+taskTimer.getTotalTime()+" ms.");
+    		LOG.info("Total time spent during upload for ' "+inputUri+" ' , when exception occured::- "+taskTimer.getTotalTime()+" ms.");
 
     		result.sampleEnd(); // Record the end time of a sample and calculate the elapsed time
 			result.setSuccessful(false);
