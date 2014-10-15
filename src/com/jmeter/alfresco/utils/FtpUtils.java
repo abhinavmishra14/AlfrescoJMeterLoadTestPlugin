@@ -86,7 +86,6 @@ public final class FtpUtils {
         			final File localDirOrFileObj = new File(fromLocalDirOrFile);
         			if (localDirOrFileObj.isFile()) {
         				LOG.info("Uploading file: "+ fromLocalDirOrFile);
-        				
         				uploadFile(ftpClient, fromLocalDirOrFile, toRemoteDirOrFile
         						+ FILE_SEPERATOR_LINUX + localDirOrFileObj.getName());				
         			} else {
@@ -157,7 +156,7 @@ public final class FtpUtils {
 					if (isFileUploaded) {
 						LOG.info("File uploaded: '"+ remoteFilePath+"'");
 					} else {
-						LOG.warn("Could not upload the file: '"+ localFilePath+"'");
+						LOG.warn("Could not upload the file: '"+ localFilePath+"' on remote host, file may be existing!");
 					}
 				} else {
 					//Recursively traverse the directory and create the directory.
@@ -169,7 +168,6 @@ public final class FtpUtils {
 					//If reply code is 426 then,Connection closed; transfer aborted. 
 					//If reply code is 450 then,Requested file action not taken. (e.g. given directory not created)
 					LOG.debug("Reply code from remote host after makeDirectory(..) call: "+replyCode);
-					
 					if (isDirCreated) {
 						LOG.info("Created the directory: '"+ remoteFilePath+"' on remote host");
 					} else {
