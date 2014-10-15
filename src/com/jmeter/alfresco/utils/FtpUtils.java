@@ -79,8 +79,9 @@ public final class FtpUtils {
             	final boolean loginSuccess = ftpClient.login(userName, password);
             	if(loginSuccess){
         			LOG.info("Connected to remote host!");
-            	
-            		//Use local passive mode to pass fire-wall
+        			//Use local passive mode to pass fire-wall
+        			//In this mode a data connection is made by opening a port on the server for the client to connect 
+        			//and this is not blocked by fire-wall.
         			ftpClient.enterLocalPassiveMode();
         			final File localDirOrFileObj = new File(fromLocalDirOrFile);
         			if (localDirOrFileObj.isFile()) {
@@ -91,12 +92,10 @@ public final class FtpUtils {
         			} else {
         				uploadDirectory(ftpClient, toRemoteDirOrFile, fromLocalDirOrFile,EMPTY);
         			}
-        			
         			responseMessage = "Upload completed successfully!";
             	}else{
             		responseMessage = "Could not login to the remote host!";
             	}
-    			    			
     			//Log out and disconnect from the server once FTP operation is completed.
     			if (ftpClient.isConnected()) {
     				try {
@@ -115,7 +114,6 @@ public final class FtpUtils {
             	responseMessage = "Host connection failed!";
             }		
 			LOG.info("ResponseMessage:=> "+responseMessage);
-			
 		} catch (IOException ioexcp) {
 			LOG.error("IOException occured in uploadDirectoryOrFile(..): ", ioexcp);
 		    throw ioexcp;
@@ -163,8 +161,15 @@ public final class FtpUtils {
 					}
 				} else {
 					//Recursively traverse the directory and create the directory.
-					// Create directory on the server
+					//Create directory on the server
 					final boolean isDirCreated = ftpClient.makeDirectory(remoteFilePath);
+					final int replyCode = ftpClient.getReplyCode();
+					//If reply code is 257 then,"PATHNAME" created. (e.g. given directory created)
+					//If reply code is 226 then,Closing data connection. 
+					//If reply code is 426 then,Connection closed; transfer aborted. 
+					//If reply code is 450 then,Requested file action not taken. (e.g. given directory not created)
+					LOG.debug("Reply code from remote host after makeDirectory(..) call: "+replyCode);
+					
 					if (isDirCreated) {
 						LOG.info("Created the directory: '"+ remoteFilePath+"' on remote host");
 					} else {
@@ -202,7 +207,14 @@ public final class FtpUtils {
 		final InputStream inputStream = new FileInputStream(localFile);
 		try {
 			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-			return ftpClient.storeFile(toRemoteFilePath, inputStream);
+			final boolean isFileUploaded = ftpClient.storeFile(toRemoteFilePath, inputStream);
+			final int replyCode = ftpClient.getReplyCode();
+			//If reply code is 550 then,Requested action not taken. File unavailable (e.g., file not found, no access).
+			//If reply code is 150 then,File status okay (e.g., File found)
+			//If reply code is 226 then,Closing data connection. 
+			//If reply code is 426 then,Connection closed; transfer aborted. 
+			LOG.debug("Reply code from remote host after storeFile(..) call: "+replyCode);
+			return isFileUploaded;
 		} finally {
 			inputStream.close();
 		}
