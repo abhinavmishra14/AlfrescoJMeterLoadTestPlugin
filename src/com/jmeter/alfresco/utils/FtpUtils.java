@@ -151,28 +151,23 @@ public final class FtpUtils {
 				if (item.isFile()) {
 					// Upload the file
 					final String localFilePath = convertToLinuxFormat(item.getAbsolutePath());
-					LOG.info("Uploading file: "+ localFilePath);
+					LOG.info("Thread-"+Thread.currentThread().getName()+", uploading file: "+ localFilePath);
 					final boolean isFileUploaded = uploadFile(ftpClient,localFilePath, remoteFilePath);
 					if (isFileUploaded) {
-						LOG.info("File uploaded: '"+ remoteFilePath+"'");
+						LOG.info("File uploaded: "+ remoteFilePath);
 					} else {
-						LOG.warn("Could not upload the file: '"+ localFilePath+"' on remote host, file may be existing!");
+						LOG.warn("Could not upload the file: "+ localFilePath+" on remote host, file may be existing!");
 					}
 				} else {
 					//Recursively traverse the directory and create the directory.
 					//Create directory on the server
+					LOG.info("Thread-"+Thread.currentThread().getName()+", creating remote dir: "+ remoteFilePath);
 					final boolean isDirCreated = ftpClient.makeDirectory(remoteFilePath);
-					final int replyCode = ftpClient.getReplyCode();
-					//If reply code is 257 then,"PATHNAME" created. (e.g. given directory created)
-					//If reply code is 226 then,Closing data connection. 
-					//If reply code is 426 then,Connection closed; transfer aborted. 
-					//If reply code is 450 then,Requested file action not taken. (e.g. given directory not created)
-					LOG.debug("Reply code from remote host after makeDirectory(..) call: "+replyCode);
 					if (isDirCreated) {
-						LOG.info("Created the directory: '"+ remoteFilePath+"' on remote host");
+						LOG.info("Created the directory: "+ remoteFilePath+" on remote host");
 					} else {
-						LOG.warn("Could not create the directory: '"
-								+ remoteFilePath+"' on remote host, directory may be existing!");
+						LOG.warn("Could not create the directory: "
+								+ remoteFilePath+" on remote host, directory may be existing!");
 					}
 					//Directory created, now upload the sub directory
 					String parentDirectory = remoteParentDir + FILE_SEPERATOR_LINUX + item.getName();
