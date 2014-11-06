@@ -78,14 +78,14 @@ public final class FtpUtils {
             if (FTPReply.isPositiveCompletion(replyCode)) {
             	final boolean loginSuccess = ftpClient.login(userName, password);
             	if(loginSuccess){
-        			LOG.info("Connected to remote host!");
+        			LOG.debug("Connected to remote host!");
         			//Use local passive mode to pass fire-wall
         			//In this mode a data connection is made by opening a port on the server for the client to connect 
         			//and this is not blocked by fire-wall.
         			ftpClient.enterLocalPassiveMode();
         			final File localDirOrFileObj = new File(fromLocalDirOrFile);
         			if (localDirOrFileObj.isFile()) {
-        				LOG.info("Uploading file: "+ fromLocalDirOrFile);
+        				LOG.debug("Uploading file: "+ fromLocalDirOrFile);
         				uploadFile(ftpClient, fromLocalDirOrFile, toRemoteDirOrFile
         						+ FILE_SEPERATOR_LINUX + localDirOrFileObj.getName());				
         			} else {
@@ -104,7 +104,7 @@ public final class FtpUtils {
     				}
     				try {
     					ftpClient.disconnect();
-    					LOG.info("Disconnected from remote host!");
+    					LOG.debug("Disconnected from remote host!");
     				} catch (IOException ignored) {
     					LOG.error("Ignoring the exception while disconnecting from remote host: ", ignored);
     				}
@@ -112,7 +112,7 @@ public final class FtpUtils {
             } else{
             	responseMessage = "Host connection failed!";
             }		
-			LOG.info("ResponseMessage:=> "+responseMessage);
+			LOG.debug("ResponseMessage:=> "+responseMessage);
 		} catch (IOException ioexcp) {
 			LOG.error("IOException occured in uploadDirectoryOrFile(..): ", ioexcp);
 		    throw ioexcp;
@@ -134,7 +134,7 @@ public final class FtpUtils {
 			final String remoteParentDir) throws IOException {
 		fromLocalParentDir = convertToLinuxFormat(fromLocalParentDir);
 		fromLocalParentDir = checkLinuxSeperator(fromLocalParentDir);
-		LOG.info("Listing the directory tree: " + fromLocalParentDir);
+		LOG.debug("Listing the directory tree: " + fromLocalParentDir);
 		final File localDir = new File(fromLocalParentDir);
 		final File [] listedFiles = localDir.listFiles();
 		List<File> subFiles = null;
@@ -151,20 +151,20 @@ public final class FtpUtils {
 				if (item.isFile()) {
 					// Upload the file
 					final String localFilePath = convertToLinuxFormat(item.getAbsolutePath());
-					LOG.info("Thread-"+Thread.currentThread().getName()+", uploading file: "+ localFilePath);
+					LOG.debug("Thread-"+Thread.currentThread().getName()+", uploading file: "+ localFilePath);
 					final boolean isFileUploaded = uploadFile(ftpClient,localFilePath, remoteFilePath);
 					if (isFileUploaded) {
-						LOG.info("File uploaded: "+ remoteFilePath);
+						LOG.debug("File uploaded: "+ remoteFilePath);
 					} else {
 						LOG.warn("Could not upload the file: "+ localFilePath+" on remote host, file may be existing!");
 					}
 				} else {
 					//Recursively traverse the directory and create the directory.
 					//Create directory on the server
-					LOG.info("Thread-"+Thread.currentThread().getName()+", creating remote dir: "+ remoteFilePath);
+					LOG.debug("Thread-"+Thread.currentThread().getName()+", creating remote dir: "+ remoteFilePath);
 					final boolean isDirCreated = ftpClient.makeDirectory(remoteFilePath);
 					if (isDirCreated) {
-						LOG.info("Created the directory: "+ remoteFilePath+" on remote host");
+						LOG.debug("Created the directory: "+ remoteFilePath+" on remote host");
 					} else {
 						LOG.warn("Could not create the directory: "
 								+ remoteFilePath+" on remote host, directory may be existing!");

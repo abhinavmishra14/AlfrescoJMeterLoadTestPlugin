@@ -61,14 +61,14 @@ public final class HttpUtils {
 			final String username, final String password)
 			throws ParseException, IOException {
 		
-		LOG.info("Authenticating request..");
+		LOG.debug("Authenticating request..");
 		final Map<String, String> responseMap = new ConcurrentHashMap<String, String>();
 		GetMethod getRequest = null;
 		try {
 			final HttpClient httpclient = new HttpClient();
 			getRequest = new GetMethod(getAuthURL(authURI, username, password));
 			final int statusCode = httpclient.executeMethod(getRequest);
-			LOG.info("Auth Response Status: "+ statusCode+"|"+ getRequest.getStatusText());
+			LOG.debug("Auth Response Status: "+ statusCode+"|"+ getRequest.getStatusText());
 	
 			responseMap.put(Constants.RESP_BODY, getRequest.getResponseBodyAsString());
 			responseMap.put(Constants.CONTENT_TYPE, getRequest.getResponseHeader(Constants.CONTENT_TYPE_HDR).getValue());
@@ -121,13 +121,13 @@ public final class HttpUtils {
 		PostMethod postRequest = null;
 		try {
 			final String uploadURL = getFileUploadURL(uploadURI,authTicket);
-			LOG.debug("documentUpload() | Upload URL: " + uploadURL);
+			LOG.info("documentUpload() | Upload URL: " + uploadURL);
 			
 			final HttpClient httpClient = new HttpClient();
 			postRequest = new PostMethod(uploadURL);
 		    final String mimeType = getMimeType(docFileObj);
 			final String docName = docFileObj.getName();
-			LOG.info("documentUpload() | Uploading document: "+docName+" , content-type: "+mimeType);
+			LOG.debug("documentUpload() | Uploading document: "+docName+" , content-type: "+mimeType);
 
 			final Part[] parts = {
 					new FilePart("filedata", docName, docFileObj, mimeType,null),
