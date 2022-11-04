@@ -119,7 +119,8 @@ public final class HttpUtils {
 			final String uploadURL = getFileUploadURL(uploadURI, authTicket);
 			final String mimeType = getMimeType(docFileObj);
 			final String docName = docFileObj.getName();
-			LOG.info("documentUpload() -> " + " | docName: " + docName + " | content-type: " + mimeType + " | Upload URL: " + uploadURL);
+			LOG.info("documentUpload() -> " + " | docName: " + docName + " | content-type: " + mimeType + " | siteID: "
+					+ siteID + " | Upload URL: " + uploadURL);
 			final HttpClient httpClient = new HttpClient();
 			postRequest = new PostMethod(uploadURL);
 			final Part[] parts = {
@@ -166,7 +167,8 @@ public final class HttpUtils {
 			final String uploadURL = getFileUploadURL(uploadURI, authTicket);
 			final String mimeType = getMimeType(docFileObj);
 			final String docName = docFileObj.getName();
-			LOG.info("documentUpload() -> " + " | docName: " + docName + " | content-type: " + mimeType + " | Upload URL: " + uploadURL);
+			LOG.info("documentUpload() -> " + " | docName: " + docName + " | content-type: " + mimeType + " | destinationNodeRef: "
+					+ destinationNodeRef + " | Upload URL: " + uploadURL);
 			final HttpClient httpClient = new HttpClient();
 			postRequest = new PostMethod(uploadURL);
 			final Part[] parts = {
