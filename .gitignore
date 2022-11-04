@@ -6,3 +6,5 @@ bin/
 .idea/
 alf_data_dev/
 *.iml
+/jar/
+/bin/

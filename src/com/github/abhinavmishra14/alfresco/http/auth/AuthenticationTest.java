@@ -72,7 +72,7 @@ public class AuthenticationTest extends AbstractJavaSamplerClient {
 		final TaskTimer taskTimer = new TaskTimer();
 
 		try {
-			LOG.info("Starting load test..");
+			LOG.info("Starting test..");
 			result.sampleStart(); // Record the start time of a sample
 			final HttpUtils httpUtils = new HttpUtils();
 			//starting the task timer
@@ -80,19 +80,16 @@ public class AuthenticationTest extends AbstractJavaSamplerClient {
     		final Map<String, String> responseMap = httpUtils.getAuthResponse(authURI, username, password);			
     		//ending the task timer
 			taskTimer.endTimer();
-    		LOG.info("Total time spent during upload: "+taskTimer.getFormattedTotalTime());
 			result.sampleEnd();// Record the end time of a sample and calculate the elapsed time
-			LOG.info("Ending load test..");
 			result.setResponseMessage(responseMap.get(Constants.RESP_BODY));
 			result.setSuccessful(true);
 			result.setResponseCode(responseMap.get(Constants.STATUS_CODE));
 			result.setContentType(responseMap.get(Constants.CONTENT_TYPE));
+			LOG.info("Ending test.");
 		} catch (Exception excp) {
 			//ending the task timer
 			taskTimer.endTimer();
-    		LOG.info("Total time spent during upload when exception occurred: "+taskTimer.getFormattedTotalTime());
 			result.sampleEnd(); // Record the end time of a sample and calculate the elapsed time
-			LOG.info("Ending load test..");
 			result.setSuccessful(false);
 			result.setResponseMessage("Exception occurred while running test: " + excp);
 			// Get stack trace as a String to return as document data

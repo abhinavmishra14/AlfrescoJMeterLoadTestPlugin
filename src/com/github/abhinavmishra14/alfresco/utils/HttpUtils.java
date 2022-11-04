@@ -69,9 +69,7 @@ public final class HttpUtils {
 			final HttpClient httpclient = new HttpClient();
 			getRequest = new GetMethod(getAuthURL(authURI, username, password));
 			final int statusCode = httpclient.executeMethod(getRequest);
-			if(LOG.isDebugEnabled()) {
-				LOG.debug("Auth Response Status: "+ statusCode+"|"+ getRequest.getStatusText());
-	  		}
+			LOG.info("Auth Response Status: "+ statusCode+"|"+ getRequest.getStatusText());
 			responseMap.put(Constants.RESP_BODY, getRequest.getResponseBodyAsString());
 			responseMap.put(Constants.CONTENT_TYPE, getRequest.getResponseHeader(Constants.CONTENT_TYPE_HDR).getValue());
 			responseMap.put(Constants.STATUS_CODE, String.valueOf(statusCode));
