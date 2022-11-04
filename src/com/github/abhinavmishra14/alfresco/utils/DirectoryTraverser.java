@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jmeter.alfresco.utils;
+package com.github.abhinavmishra14.alfresco.utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,7 +33,6 @@ import java.util.Set;
  * @since 2014
  */
 public final class DirectoryTraverser {
-
 	
 	/**
 	 * Gets the file uris.
@@ -87,16 +86,19 @@ public final class DirectoryTraverser {
 			throws FileNotFoundException {
 		if (directoryUri == null) {
 			throw new IllegalArgumentException("Directory should not be null.");
-		}if (!directoryUri.exists()) {
+		} if (!directoryUri.exists()) {
 			throw new FileNotFoundException("Directory does not exist: "+ directoryUri);
-		}if (!directoryUri.isDirectory()) {
+		} if (!directoryUri.isDirectory()) {
 			throw new IllegalArgumentException("Is not a directory: "+ directoryUri);
-		}if (!directoryUri.canRead()) {
+		} if (!directoryUri.canRead()) {
 			throw new IllegalArgumentException("Directory cannot be read: "
 					+ directoryUri);
 		}
 	}
 
+	/**
+	 * Instantiates a new directory traverser.
+	 */
 	private DirectoryTraverser() {
 		super();
 	}	

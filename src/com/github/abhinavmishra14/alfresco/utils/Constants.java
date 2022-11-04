@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jmeter.alfresco.utils;
+package com.github.abhinavmishra14.alfresco.utils;
 
 /**
  * The Class Constants.
@@ -31,8 +31,8 @@ public final class Constants {
 	/** The Constant EMPTY. */
 	public static final String EMPTY = "";
 	
-	/** The Constant BR. */
-	public static final String BR = "\n";
+	/** The Constant LINE_BR. */
+	public static final String LINE_BR = "\n";
 
 	/** The Constant SERVER. */
 	public static final String SERVER = "server";
@@ -52,11 +52,11 @@ public final class Constants {
 	/** The Constant DESC. */
 	public static final String DESC = "description";
 
-	/** The Constant U. */
-	public static final String U = "u";
+	/** The Constant USER_PARAM. */
+	public static final String USER_PARAM = "u";
 	
-	/** The Constant PW. */
-	public static final String PW = "pw";
+	/** The Constant PASSWORD_PARAM. */
+	public static final String PASSWORD_PARAM = "pw";
 	
 	/** The Constant USERNAME. */
 	public static final String USERNAME = "username";
@@ -102,7 +102,10 @@ public final class Constants {
 
 	/** The Constant SITE_ID. */
 	public static final String SITE_ID = "siteid";
-	
+
+	/** The Constant DESTINATION. */
+	public static final String DESTINATION = "destination";
+
 	/** The Constant CONTAINER_ID. */
 	public static final String CONTAINER_ID = "containerid";
 	
@@ -121,6 +124,9 @@ public final class Constants {
 	/** The Constant REMOTE_FILE_OR_DIR. */
 	public static final String REMOTE_FILE_OR_DIR = "remoteDirectoryPath";
 
+	/**
+	 * Instantiates a new constants.
+	 */
 	private Constants() {
 		super();
 	}

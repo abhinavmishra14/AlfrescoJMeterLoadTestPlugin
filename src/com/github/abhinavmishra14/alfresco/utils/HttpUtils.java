@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jmeter.alfresco.utils;
+package com.github.abhinavmishra14.alfresco.utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +44,7 @@ import org.apache.http.ParseException;
  */
 public final class HttpUtils {
 	
-	/** The Constant logger. */
+	/** The Constant LOG. */
 	private static final Log LOG = LogFactory.getLog(HttpUtils.class);
 	
 	/**
@@ -60,29 +60,29 @@ public final class HttpUtils {
 	public Map<String, String> getAuthResponse(final String authURI,
 			final String username, final String password)
 			throws ParseException, IOException {
-		
-		LOG.debug("Authenticating request..");
+		if(LOG.isDebugEnabled()) {
+			LOG.debug("Authenticating request..");
+  		}
 		final Map<String, String> responseMap = new ConcurrentHashMap<String, String>();
 		GetMethod getRequest = null;
 		try {
 			final HttpClient httpclient = new HttpClient();
 			getRequest = new GetMethod(getAuthURL(authURI, username, password));
 			final int statusCode = httpclient.executeMethod(getRequest);
-			LOG.debug("Auth Response Status: "+ statusCode+"|"+ getRequest.getStatusText());
-	
+			if(LOG.isDebugEnabled()) {
+				LOG.debug("Auth Response Status: "+ statusCode+"|"+ getRequest.getStatusText());
+	  		}
 			responseMap.put(Constants.RESP_BODY, getRequest.getResponseBodyAsString());
 			responseMap.put(Constants.CONTENT_TYPE, getRequest.getResponseHeader(Constants.CONTENT_TYPE_HDR).getValue());
 			responseMap.put(Constants.STATUS_CODE, String.valueOf(statusCode));
-			
 		} finally {
-			if(getRequest!=null){
+			if (getRequest != null) {
 				getRequest.releaseConnection();
 			}
 		}
 		return responseMap;
 	}
 	
-		
 	/**
 	 * Gets the auth ticket.
 	 *
@@ -101,9 +101,8 @@ public final class HttpUtils {
 		return ticketFrmResponse.substring(startindex, endindex);
 	}
 	
-
 	/**
-	 * Document upload.
+	 * Document upload to site.
 	 *
 	 * @param docFileObj the doc file obj
 	 * @param authTicket the auth ticket
@@ -113,38 +112,35 @@ public final class HttpUtils {
 	 * @return the string
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public String documentUpload(final File docFileObj,
+	public String documentUploadToSite(final File docFileObj,
 			final String authTicket, final String uploadURI,
 			final String siteID, final String uploadDir) throws IOException {
-
 		String uploadResponse = Constants.EMPTY;
 		PostMethod postRequest = null;
 		try {
-			final String uploadURL = getFileUploadURL(uploadURI,authTicket);
-			LOG.info("documentUpload() | Upload URL: " + uploadURL);
-			
+			final String uploadURL = getFileUploadURL(uploadURI, authTicket);
+			final String mimeType = getMimeType(docFileObj);
+			final String docName = docFileObj.getName();
+			LOG.info("documentUpload() -> " + " | docName: " + docName + " | content-type: " + mimeType + " | Upload URL: " + uploadURL);
 			final HttpClient httpClient = new HttpClient();
 			postRequest = new PostMethod(uploadURL);
-		    final String mimeType = getMimeType(docFileObj);
-			final String docName = docFileObj.getName();
-			LOG.debug("documentUpload() | Uploading document: "+docName+" , content-type: "+mimeType);
-
 			final Part[] parts = {
-					new FilePart("filedata", docName, docFileObj, mimeType,null),
+					new FilePart("filedata", docName, docFileObj, mimeType, null),
 					new StringPart("filename", docName),
 					new StringPart("overwrite", "true"),
-					new StringPart("siteid",siteID),
-					new StringPart("containerid",ConfigReader.getProperty(Constants.CONTAINER_ID)),
-					new StringPart("uploaddirectory",uploadDir) 
+					new StringPart("siteid", siteID),
+					new StringPart("containerid", ConfigReader.getProperty(Constants.CONTAINER_ID)),
+					new StringPart("uploaddirectory", uploadDir) 
 			      };
-			
 			postRequest.setRequestEntity(new MultipartRequestEntity(parts, postRequest.getParams()));
 			final int statusCode = httpClient.executeMethod(postRequest);
 			uploadResponse = postRequest.getResponseBodyAsString();
 			LOG.info("documentUpload() | Upload status: "+statusCode);
-			LOG.debug("documentUpload() | Upload response: "+uploadResponse);
-		} finally{
-			if(postRequest!=null){
+			if(LOG.isDebugEnabled()) {
+				LOG.debug("documentUpload() | Upload response: "+uploadResponse);
+	  		}
+		} finally {
+			if (postRequest != null) {
 				//releaseConnection http connection
 				postRequest.releaseConnection();
 			}
@@ -152,6 +148,53 @@ public final class HttpUtils {
 		return uploadResponse;
 	}
 
+	/**
+	 * Document upload to repo.
+	 *
+	 * @param docFileObj the doc file obj
+	 * @param authTicket the auth ticket
+	 * @param uploadURI the upload URI
+	 * @param destinationNodeRef the destination noderef
+	 * @param uploadDir the upload dir
+	 * @return the string
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public String documentUploadToRepo(final File docFileObj,
+			final String authTicket, final String uploadURI,
+			final String destinationNodeRef, final String uploadDir) throws IOException {
+		String uploadResponse = Constants.EMPTY;
+		PostMethod postRequest = null;
+		try {
+			final String uploadURL = getFileUploadURL(uploadURI, authTicket);
+			final String mimeType = getMimeType(docFileObj);
+			final String docName = docFileObj.getName();
+			LOG.info("documentUpload() -> " + " | docName: " + docName + " | content-type: " + mimeType + " | Upload URL: " + uploadURL);
+			final HttpClient httpClient = new HttpClient();
+			postRequest = new PostMethod(uploadURL);
+			final Part[] parts = {
+					new FilePart("filedata", docName, docFileObj, mimeType, null),
+					new StringPart("filename", docName),
+					new StringPart("overwrite", "true"),
+					new StringPart("destination", destinationNodeRef),
+					new StringPart("uploaddirectory", uploadDir) 
+			      };
+			postRequest.setRequestEntity(new MultipartRequestEntity(parts, postRequest.getParams()));
+			final int statusCode = httpClient.executeMethod(postRequest);
+			uploadResponse = postRequest.getResponseBodyAsString();
+			LOG.info("documentUpload() | Upload status: "+statusCode);
+			if(LOG.isDebugEnabled()) {
+				LOG.debug("documentUpload() | Upload response: "+uploadResponse);
+	  		}
+		} finally {
+			if (postRequest != null) {
+				//releaseConnection http connection
+				postRequest.releaseConnection();
+			}
+		}
+		return uploadResponse;
+	}
+
+	
 	/**
 	 * Gets the auth url.
 	 *
@@ -164,16 +207,15 @@ public final class HttpUtils {
 			final String password) {
 		final StringBuffer urlStrb = new StringBuffer(path);
 		urlStrb.append(Constants.QUES);
-		urlStrb.append(Constants.U);
+		urlStrb.append(Constants.USER_PARAM);
 		urlStrb.append(Constants.EQL);
 		urlStrb.append(username);
 		urlStrb.append(Constants.AMPERSND);
-		urlStrb.append(Constants.PW);
+		urlStrb.append(Constants.PASSWORD_PARAM);
 		urlStrb.append(Constants.EQL);
 		urlStrb.append(password);
 		return urlStrb.toString();
 	}
-	
 	
 	/**
 	 * Url file upload.

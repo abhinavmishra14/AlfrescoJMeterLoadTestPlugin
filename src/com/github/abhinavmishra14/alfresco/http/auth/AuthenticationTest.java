@@ -15,10 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jmeter.alfresco.ftp.upload;
+package com.github.abhinavmishra14.alfresco.http.auth;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,21 +28,21 @@ import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
-import com.jmeter.alfresco.utils.ConfigReader;
-import com.jmeter.alfresco.utils.Constants;
-import com.jmeter.alfresco.utils.FtpUtils;
-import com.jmeter.alfresco.utils.TaskTimer;
+import com.github.abhinavmishra14.alfresco.utils.ConfigReader;
+import com.github.abhinavmishra14.alfresco.utils.Constants;
+import com.github.abhinavmishra14.alfresco.utils.HttpUtils;
+import com.github.abhinavmishra14.alfresco.utils.TaskTimer;
 
 /**
- * The Class UploadDocumentTestFtp.
+ * The Class AuthenticationTest.
  * 
  * @author Abhinav Kumar Mishra
  * @since 2014
  */
-public class UploadDocumentTestFtp extends AbstractJavaSamplerClient {
-	
-	/** The Constant logger. */
-	private static final Log LOG = LogFactory.getLog(UploadDocumentTestFtp.class);
+public class AuthenticationTest extends AbstractJavaSamplerClient {
+
+	/** The Constant LOG. */
+	private static final Log LOG = LogFactory.getLog(AuthenticationTest.class);
 	
 	/* (non-Javadoc)
 	 * @see org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient#getDefaultParameters()
@@ -49,76 +50,58 @@ public class UploadDocumentTestFtp extends AbstractJavaSamplerClient {
 	@Override
 	public Arguments getDefaultParameters() {
 		final Arguments defaultParameters = new Arguments();
-		defaultParameters.addArgument(Constants.FTP_HOST,
-			    ConfigReader.getProperty(Constants.FTP_HOST));
-		
-		defaultParameters.addArgument(Constants.FTP_PORT,
-			    ConfigReader.getProperty(Constants.FTP_PORT));
-		
-		defaultParameters.addArgument(Constants.USERNAME,ConfigReader.getProperty(Constants.U));
-		defaultParameters.addArgument(Constants.PASSWORD,ConfigReader.getProperty(Constants.PW));
-		defaultParameters.addArgument(Constants.LOCAL_FILE_OR_DIR,Constants.EMPTY);
-		defaultParameters.addArgument(Constants.REMOTE_FILE_OR_DIR,Constants.EMPTY);
+		defaultParameters.addArgument(Constants.SERVER,
+				ConfigReader.getProperty(Constants.BASEPATH));
+		defaultParameters.addArgument(Constants.USERNAME,ConfigReader.getProperty(Constants.USER_PARAM));
+		defaultParameters.addArgument(Constants.PASSWORD,ConfigReader.getProperty(Constants.PASSWORD_PARAM));
 		return defaultParameters;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.apache.jmeter.protocol.java.sampler.JavaSamplerClient#runTest(org.apache.jmeter.protocol.java.sampler.JavaSamplerContext)
 	 */
 	@Override
 	public SampleResult runTest(final JavaSamplerContext context) {
-		
-		LOG.info("runTest() invoked..");
-
-		final String host = context.getParameter(Constants.FTP_HOST);
-		final int port = Integer.valueOf(context.getParameter(Constants.FTP_PORT));
-		final String userName = context.getParameter(Constants.USERNAME);
+		LOG.info("runTest() invoked..");	
+		final String serverAddress= context.getParameter(Constants.SERVER);
+		final String authURI = serverAddress+ConfigReader.getProperty(Constants.LOGIN_PATH);
+		final String username = context.getParameter(Constants.USERNAME);
 		final String password = context.getParameter(Constants.PASSWORD);
-		final String localDirOrFile = context.getParameter(Constants.LOCAL_FILE_OR_DIR);
-		final String remoteDirOrFile = context.getParameter(Constants.REMOTE_FILE_OR_DIR);
 		
 		final SampleResult result = new SampleResult();
 		final TaskTimer taskTimer = new TaskTimer();
+
 		try {
-			
 			LOG.info("Starting load test..");
 			result.sampleStart(); // Record the start time of a sample
-			final FtpUtils fileUtils = new FtpUtils();
-			result.latencyEnd(); //Set the time to the first response 
-			
+			final HttpUtils httpUtils = new HttpUtils();
 			//starting the task timer
-    		taskTimer.startTimer();
-    		LOG.info("Upload timer started for ' "+localDirOrFile+" ' ::- "+taskTimer.getStartTime()+" ms.");
-    		
-			final String responseMessage = fileUtils.uploadDirectoryOrFile(host, port, userName, password,
-					localDirOrFile, remoteDirOrFile);
-			
-			//ending the task timer
+    		taskTimer.startTimer();			
+    		final Map<String, String> responseMap = httpUtils.getAuthResponse(authURI, username, password);			
+    		//ending the task timer
 			taskTimer.endTimer();
-    		LOG.info("Total time spent during upload for ' "+localDirOrFile+" ' ::- "+taskTimer.getTotalTime()+" ms.");
-    		
+    		LOG.info("Total time spent during upload: "+taskTimer.getFormattedTotalTime());
 			result.sampleEnd();// Record the end time of a sample and calculate the elapsed time
 			LOG.info("Ending load test..");
-			result.setResponseMessage("OK,"+responseMessage+" See the log for details.");
+			result.setResponseMessage(responseMap.get(Constants.RESP_BODY));
 			result.setSuccessful(true);
-			result.setResponseCodeOK();
-			result.setContentType(Constants.EMPTY);
+			result.setResponseCode(responseMap.get(Constants.STATUS_CODE));
+			result.setContentType(responseMap.get(Constants.CONTENT_TYPE));
 		} catch (Exception excp) {
 			//ending the task timer
 			taskTimer.endTimer();
-			LOG.info("Total time spent during upload for ' "+ localDirOrFile+ " ' , when exception occured::- "+ taskTimer.getTotalTime()+ " ms.");
-			
-    		result.sampleEnd(); // Record the end time of a sample and calculate the elapsed time
+    		LOG.info("Total time spent during upload when exception occurred: "+taskTimer.getFormattedTotalTime());
+			result.sampleEnd(); // Record the end time of a sample and calculate the elapsed time
 			LOG.info("Ending load test..");
 			result.setSuccessful(false);
-			result.setResponseMessage("Exception occured while running test: " + excp);
+			result.setResponseMessage("Exception occurred while running test: " + excp);
 			// Get stack trace as a String to return as document data
 			final StringWriter stringWriter = new StringWriter();
 			excp.printStackTrace(new PrintWriter(stringWriter));
 			result.setResponseData(stringWriter.toString(),Constants.ENCODING);
 			result.setDataType(org.apache.jmeter.samplers.SampleResult.TEXT);
 			result.setResponseCode(Constants.SERVER_ERR);
-			LOG.error("Exception occured while running test: ", excp);
+			LOG.error("Exception occurred while running test: ", excp);
 		} 
 		return result;
 	}

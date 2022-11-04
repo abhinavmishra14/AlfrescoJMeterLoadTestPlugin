@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jmeter.alfresco.http.upload;
+package com.github.abhinavmishra14.alfresco.http.upload;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,11 +32,11 @@ import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
-import com.jmeter.alfresco.utils.ConfigReader;
-import com.jmeter.alfresco.utils.Constants;
-import com.jmeter.alfresco.utils.DirectoryTraverser;
-import com.jmeter.alfresco.utils.HttpUtils;
-import com.jmeter.alfresco.utils.TaskTimer;
+import com.github.abhinavmishra14.alfresco.utils.ConfigReader;
+import com.github.abhinavmishra14.alfresco.utils.Constants;
+import com.github.abhinavmishra14.alfresco.utils.DirectoryTraverser;
+import com.github.abhinavmishra14.alfresco.utils.HttpUtils;
+import com.github.abhinavmishra14.alfresco.utils.TaskTimer;
 
 /**
  * The Class UploadDocumentTestHttp.
@@ -44,10 +44,10 @@ import com.jmeter.alfresco.utils.TaskTimer;
  * @author Abhinav Kumar Mishra
  * @since 2014
  */
-public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
+public class UploadDocumentToSiteViaHttp extends AbstractJavaSamplerClient {
 	
-	/** The Constant logger. */
-	private static final Log LOG = LogFactory.getLog(UploadDocumentTestHttp.class);
+	/** The Constant LOG. */
+	private static final Log LOG = LogFactory.getLog(UploadDocumentToSiteViaHttp.class);
 	
 	/* (non-Javadoc)
 	 * @see org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient#getDefaultParameters()
@@ -57,13 +57,11 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 		final Arguments defaultParameters = new Arguments();
 		defaultParameters.addArgument(Constants.SERVER,
 			    ConfigReader.getProperty(Constants.BASEPATH));
-		defaultParameters.addArgument(Constants.USERNAME,ConfigReader.getProperty(Constants.U));
-		defaultParameters.addArgument(Constants.PASSWORD,ConfigReader.getProperty(Constants.PW));
-		
-		defaultParameters.addArgument(Constants.SITE_ID,ConfigReader.getProperty(Constants.SITE_ID));
-		defaultParameters.addArgument(Constants.UPLOAD_DIR,ConfigReader.getProperty(Constants.UPLOAD_DIR));
-
-		defaultParameters.addArgument(Constants.INPUT_PATH,Constants.EMPTY);
+		defaultParameters.addArgument(Constants.USERNAME, ConfigReader.getProperty(Constants.USER_PARAM));
+		defaultParameters.addArgument(Constants.PASSWORD, ConfigReader.getProperty(Constants.PASSWORD_PARAM));
+		defaultParameters.addArgument(Constants.SITE_ID, ConfigReader.getProperty(Constants.SITE_ID));
+		defaultParameters.addArgument(Constants.UPLOAD_DIR, ConfigReader.getProperty(Constants.UPLOAD_DIR));
+		defaultParameters.addArgument(Constants.INPUT_PATH, Constants.EMPTY);
 		return defaultParameters;
 	}
 	
@@ -72,9 +70,7 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 	 */
 	@Override
 	public SampleResult runTest(final JavaSamplerContext context) {
-	
 		LOG.info("runTest() invoked..");
-
 		final String serverAddress= context.getParameter(Constants.SERVER);
 		final String uploadUri = serverAddress+ConfigReader.getProperty(Constants.UPLOAD_PATH);
 		final String authURI = serverAddress+ConfigReader.getProperty(Constants.LOGIN_PATH);
@@ -83,15 +79,13 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 		final String inputUri = context.getParameter(Constants.INPUT_PATH);		
 		final String siteID = context.getParameter(Constants.SITE_ID);
 		final String uploadDir = context.getParameter(Constants.UPLOAD_DIR);
-		
 		final HttpUtils httpUtils = new HttpUtils();
 		final TaskTimer taskTimer = new TaskTimer();
-
 		String authTicket = Constants.EMPTY;
 		try {
 			authTicket = httpUtils.getAuthTicket(authURI, username, password);
 		} catch (IOException ioex) {
-			LOG.error("IOException occured while getting the auth ticket: ", ioex);
+			LOG.error("IOException occurred while getting the auth ticket: ", ioex);
 		}
 
 		final SampleResult result = new SampleResult();
@@ -99,36 +93,33 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 			LOG.info("Starting load test..");
 			final File fileObject = new File (inputUri);
 			result.sampleStart(); // Record the start time of a sample
-			final StringBuffer responseBody= new StringBuffer();
-			
+			final StringBuffer responseBody= new StringBuffer();			
 			//starting the task timer
     		taskTimer.startTimer();
-    		LOG.info("Upload timer started for ' "+inputUri+" ' ::- "+taskTimer.getStartTime()+" ms.");
-    		
+    		LOG.info("Upload timer started for ' "+inputUri+" '");
 			//if uri is a directory the upload all files..
-			if(fileObject.isDirectory()){
+			if(fileObject.isDirectory()) {
 				final Set<File> setOfUris = Collections.unmodifiableSet(
 						DirectoryTraverser.getFileUris(fileObject));
 				for (final Iterator<File> iterator = setOfUris.iterator(); iterator.hasNext();) {
 					final File fileObj = iterator.next();
 					//call document upload
-					if(fileObj.isFile()){
-						responseBody.append(httpUtils.documentUpload(
+					if(fileObj.isFile()) {
+						responseBody.append(httpUtils.documentUploadToSite(
 								fileObj, authTicket, uploadUri, siteID,
 								uploadDir));
-						responseBody.append(Constants.BR);
+						responseBody.append(Constants.LINE_BR);
 					}
 			     }
-			}else{
-				responseBody.append(httpUtils.documentUpload(
+			} else {
+				responseBody.append(httpUtils.documentUploadToSite(
 						fileObject, authTicket, uploadUri, siteID,
 						uploadDir));
 			}
 			
 			//ending the task timer
 			taskTimer.endTimer();
-    		LOG.info("Total time spent during upload for ' "+inputUri+" ' ::- "+taskTimer.getTotalTime()+" ms.");
-    		
+    		LOG.info("Total time spent during upload for ' "+inputUri+" ' ::- "+taskTimer.getFormattedTotalTime());
 			result.sampleEnd();// Record the end time of a sample and calculate the elapsed time
 			LOG.info("Ending load test..");
 			result.setResponseMessage(responseBody.toString());
@@ -138,18 +129,17 @@ public class UploadDocumentTestHttp extends AbstractJavaSamplerClient {
 		} catch (Exception excp) {
 			//ending the task timer
 			taskTimer.endTimer();
-    		LOG.info("Total time spent during upload for ' "+inputUri+" ' , when exception occured::- "+taskTimer.getTotalTime()+" ms.");
-
+    		LOG.info("Total time spent during upload for ' "+inputUri+" ' , when exception occurred::- "+taskTimer.getFormattedTotalTime());
     		result.sampleEnd(); // Record the end time of a sample and calculate the elapsed time
 			result.setSuccessful(false);
-			result.setResponseMessage("Exception occured while running test: " + excp);
+			result.setResponseMessage("Exception occurred while running test: " + excp);
 			// get stack trace as a String to return as document data
 			final StringWriter stringWriter = new StringWriter();
 			excp.printStackTrace(new PrintWriter(stringWriter));
 			result.setResponseData(stringWriter.toString(),Constants.ENCODING);
 			result.setDataType(org.apache.jmeter.samplers.SampleResult.TEXT);
 			result.setResponseCode(Constants.SERVER_ERR);
-			LOG.error("Exception occured while running test: ", excp);
+			LOG.error("Exception occurred while running test: ", excp);
 		} 
 		return result;
 	}

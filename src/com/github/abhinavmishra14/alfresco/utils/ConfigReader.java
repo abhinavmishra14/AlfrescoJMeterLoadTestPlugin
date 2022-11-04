@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jmeter.alfresco.utils;
+package com.github.abhinavmishra14.alfresco.utils;
 
 import java.io.File;
 import java.io.FileInputStream;

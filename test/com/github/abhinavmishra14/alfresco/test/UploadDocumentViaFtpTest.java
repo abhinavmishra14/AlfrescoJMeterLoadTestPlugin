@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jmeter.alfresco.test;
+package com.github.abhinavmishra14.alfresco.test;
 
 import java.io.IOException;
 
@@ -23,16 +23,16 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import com.jmeter.alfresco.utils.FtpUtils;
-import com.jmeter.alfresco.utils.TaskTimer;
+import com.github.abhinavmishra14.alfresco.utils.FtpUtils;
+import com.github.abhinavmishra14.alfresco.utils.TaskTimer;
 
 /**
- * The Class UploadDocumentHttpTest.
+ * The Class UploadDocumentViaFtpTest.
  * 
  * @author Abhinav Kumar Mishra
  * @since 2014
  */
-public class UploadDocumentFtpTest extends TestCase{
+public class UploadDocumentViaFtpTest extends TestCase {
 
 	/**
 	 * Test document upload.
@@ -51,15 +51,13 @@ public class UploadDocumentFtpTest extends TestCase{
 		final FtpUtils ftpUtils = new FtpUtils();
 		final TaskTimer taskTimer = new TaskTimer();
 		//starting the task timer
-		taskTimer.startTimer();
-		System.out.println("Timer started for upload: "+taskTimer.getStartTime()+" ms.");
-		
+		taskTimer.startTimer();		
 		final String uploadResp= ftpUtils.uploadDirectoryOrFile(host, port, userName, password,
 				localDir, remoteDir);
 		
 		//ending the task timer
 		taskTimer.endTimer();
-		System.out.println("Total time spent during upload: "+taskTimer.getTotalTime()+" ms.");
+		System.out.println("Total time spent during upload: "+taskTimer.getFormattedTotalTime());
 		assertEquals("Upload completed successfully!", uploadResp);
 	}
 }

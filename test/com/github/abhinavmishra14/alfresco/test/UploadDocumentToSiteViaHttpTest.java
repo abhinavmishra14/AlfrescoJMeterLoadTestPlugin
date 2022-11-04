@@ -15,29 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jmeter.alfresco.test;
+package com.github.abhinavmishra14.alfresco.test;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 
-import com.jmeter.alfresco.utils.Constants;
-import com.jmeter.alfresco.utils.DirectoryTraverser;
-import com.jmeter.alfresco.utils.HttpUtils;
-import com.jmeter.alfresco.utils.TaskTimer;
+import com.github.abhinavmishra14.alfresco.utils.Constants;
+import com.github.abhinavmishra14.alfresco.utils.DirectoryTraverser;
+import com.github.abhinavmishra14.alfresco.utils.HttpUtils;
+import com.github.abhinavmishra14.alfresco.utils.TaskTimer;
+
+import junit.framework.TestCase;
 
 /**
- * The Class UploadDocumentHttpTest.
+ * The Class UploadDocumentToSiteViaHttpTest.
  * 
  * @author Abhinav Kumar Mishra
  * @since 2014
  */
-public class UploadDocumentHttpTest extends TestCase{
+public class UploadDocumentToSiteViaHttpTest extends TestCase {
 
 	/**
 	 * Test document upload.
@@ -53,45 +53,41 @@ public class UploadDocumentHttpTest extends TestCase{
 		final String inputUri = "C:/Users/Abhi/Desktop/data"; // files to be uploaded from this directory
 		final String siteID = "testpoc"; //id of the site for e.g if site name is TestPoc the id will be testpoc
 		final String uploadDir = "testUpload"; //directory created under document library
-		
+
 		final HttpUtils httpUtils = new HttpUtils();
 		String authTicket = Constants.EMPTY;
 		try {
 			authTicket = httpUtils.getAuthTicket(authURI, username, password);
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (IOException ioex) {
+			ioex.printStackTrace();
 		}
 
 		final StringBuffer responseBody= new StringBuffer();
-
 		final File fileObject = new File (inputUri);
 		final TaskTimer taskTimer = new TaskTimer();
 		//starting the task timer
 		taskTimer.startTimer();
-		System.out.println("Timer started for upload: "+taskTimer.getStartTime()+" ms.");
-		
 		//if uri is a directory the upload all files..
-		if(fileObject.isDirectory()){
+		if(fileObject.isDirectory()) {
 			final Set<File> setOfFiles = DirectoryTraverser.getFileUris(fileObject);
 			for (Iterator<File> iterator = setOfFiles.iterator(); iterator.hasNext();) {
 				final File fileObj = iterator.next();
 				//call document upload
 				if(fileObj.isFile()){
-					responseBody.append(httpUtils.documentUpload(
+					responseBody.append(httpUtils.documentUploadToSite(
 							fileObj, authTicket, uploadURI, siteID,
 							uploadDir));
-					responseBody.append(Constants.BR);
+					responseBody.append(Constants.LINE_BR);
 				}
-		     }
-		}else{
-			responseBody.append(httpUtils.documentUpload(
+			}
+		} else {
+			responseBody.append(httpUtils.documentUploadToSite(
 					fileObject, authTicket, uploadURI, siteID,
 					uploadDir));
 		}
 		//ending the task timer
 		taskTimer.endTimer();
-		System.out.println("Total time spent during upload: "+taskTimer.getTotalTime()+" ms.");
-				
+		System.out.println("Total time spent during upload: "+taskTimer.getFormattedTotalTime());
 		assertEquals(true, responseBody.toString().contains("File uploaded successfully"));
 	}
 }

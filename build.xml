@@ -22,11 +22,11 @@
 <project name="Alfresco JMeter Load Test Plugin Build Project" default="echo-properties" basedir=".">
 	
 	<!-- JMeter Home (Change the value as per your installation directory) -->
-    <property name="jmeter.home" value="D:\ProjectSofts\JMETER\apache-jmeter-2.11"/>   
+    <property name="jmeter.home" value="D:\Java\apache-jmeter-5.5"/>   
 	
     <property name="jmeter.plugin-lib" value="${jmeter.home}/lib/ext"/>
     <property name="ref.lib" value="${basedir}/lib"/>
-    <property name="jar.file" value="${basedir}/jar/AlfrescoJMeterLoadTestPlugin.jar"/>
+    <property name="jar.file" value="${basedir}/jar/ApacheJMeter_AlfLoadTestPlugin.jar"/>
     <property name="build.dir" value="${basedir}/build"/>
     <property name="version" value="1.0"/>
 

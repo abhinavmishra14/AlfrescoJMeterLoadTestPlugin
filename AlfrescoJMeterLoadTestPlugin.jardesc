@@ -1,14 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
 <jardesc>
-	<jar path="./AlfrescoJMeterLoadTestPlugin/jar/AlfrescoJMeterLoadTestPlugin.jar"/>
-	<options overwrite="false" compress="true" exportErrors="true" exportWarnings="true" saveDescription="true" descriptionLocation="/AlfrescoJMeterLoadTestPlugin/AlfrescoJMeterLoadTestPlugin.jardesc" useSourceFolders="false" buildIfNeeded="true" includeDirectoryEntries="false" storeRefactorings="false"/>
-	<manifest manifestVersion="1.0" usesManifest="true" reuseManifest="false" saveManifest="false" generateManifest="true" manifestLocation="">
-	<sealing sealJar="false">
-	<packagesToSeal name="src/*"/>
-	<packagesToUnSeal/>
-	</sealing>
-	</manifest>
-	<selectedElements exportClassFiles="true" exportOutputFolder="false" exportJavaFiles="false">
-	  <folder path="/AlfrescoJMeterLoadTestPlugin/src"/>
-	</selectedElements>
+    <jar path="AlfrescoJMeterLoadTestPlugin/jar/ApacheJMeter_AlfLoadTestPlugin.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/AlfrescoJMeterLoadTestPlugin/AlfrescoJMeterLoadTestPlugin.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <javaElement handleIdentifier="=AlfrescoJMeterLoadTestPlugin/src"/>
+    </selectedElements>
 </jardesc>
